@@ -6,64 +6,64 @@ export default async function handler(req, res) {
     // Next.js parsea la query automáticamente.
     const { code, state } = req.query;
 
+    // Verificamos que exista 'code'.
     if (!code) {
       return res.status(400).json({ error: 'No se encontró el código de autorización' });
     }
 
-    // Este redirectUri debe coincidir con el configurado en Cognito.
+    // El redirectUri debe coincidir con lo registrado en Cognito.
     const redirectUri = 'https://dashboard.total-remote-control.com/api/auth/callback';
 
-    // Importación dinámica de la librería.
+    // Importación dinámica de openid-client.
     const openidClientModule = await import('openid-client');
     console.log("openid-client module:", openidClientModule);
 
-    // Usaremos la función 'discovery' para obtener la configuración de Cognito.
-    // Nota: la propiedad 'Issuer' no está presente en tu versión, así que usamos 'discovery'.
-    const { discovery, Client } = openidClientModule;
+    // De la librería, usaremos 'discovery' y 'authorizationCodeGrant'.
+    const { discovery, authorizationCodeGrant } = openidClientModule;
 
-    if (!discovery || !Client) {
-      throw new Error("No se encontró 'discovery' o 'Client' en openid-client");
+    if (!discovery || !authorizationCodeGrant) {
+      throw new Error("No se encontró 'discovery' o 'authorizationCodeGrant' en openid-client");
     }
 
-    // Descubrir la configuración de Cognito
+    // 1) Descubrir la configuración de Cognito
+    //    (https://cognito-idp.{region}.amazonaws.com/{userPoolId})
     const discovered = await discovery('https://cognito-idp.us-east-1.amazonaws.com/us-east-1_b0tpHM55u');
     console.log("discovered:", discovered);
 
-    // 'discovered' debe contener al menos:
-    // {
-    //   issuer: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_b0tpHM55u",
-    //   authorization_endpoint: "...",
-    //   token_endpoint: "...",
-    //   ...
-    // }
-
+    // discovered debería contener { issuer, token_endpoint, authorization_endpoint, ... }.
+    // Verificamos que existan al menos 'issuer' y 'token_endpoint'.
     if (!discovered.issuer || !discovered.token_endpoint) {
-      throw new Error("La discovery de Cognito no devolvió los endpoints esperados");
+      throw new Error("La discovery de Cognito no devolvió endpoints esperados");
     }
 
-    // Crear el cliente OpenID Connect usando la configuración descubierta
-    const client = new Client({
-      issuer: discovered.issuer,
-      authorization_endpoint: discovered.authorization_endpoint,
+    // 2) Llamamos a authorizationCodeGrant para hacer el intercambio de 'code' por tokens.
+    //    Pasamos los datos que Cognito necesita:
+    const result = await authorizationCodeGrant({
+      // Parámetros de la petición:
+      code,              // el código de autorización
+      state,             // el state devuelto por Cognito
+      client_id: '4fbadbb2qqj15u0vf5dmauudbj',  // tu client_id
+      issuer: discovered.issuer,               // URL base del issuer
       token_endpoint: discovered.token_endpoint,
-      jwks_uri: discovered.jwks_uri,
-      userinfo_endpoint: discovered.userinfo_endpoint,
-      end_session_endpoint: discovered.end_session_endpoint,
-      // Datos específicos de tu aplicación en Cognito:
-      client_id: '4fbadbb2qqj15u0vf5dmauudbj',
-      redirect_uris: [redirectUri],
-      response_types: ['code']
+      authorization_endpoint: discovered.authorization_endpoint,
+      redirect_uri: redirectUri,
     });
+    console.log("authorizationCodeGrant result:", result);
 
-    // Intercambiar el código por tokens usando client.callback
-    const tokenSet = await client.callback(redirectUri, { code, state }, { state });
-    console.log("tokenSet:", tokenSet);
-
-    // Extraer el id_token
-    const idToken = tokenSet.id_token;
+    // 'result' debería contener un objeto con la propiedad tokens, por ejemplo:
+    // {
+    //   tokens: {
+    //     access_token, refresh_token, id_token, ...
+    //   },
+    //   ...
+    // }
+    const { tokens } = result;
+    if (!tokens || !tokens.id_token) {
+      throw new Error("No se obtuvo el id_token al intercambiar el code");
+    }
 
     // Establecer la cookie httpOnly con el idToken
-    res.setHeader("Set-Cookie", cookie.serialize("idToken", idToken, {
+    res.setHeader("Set-Cookie", cookie.serialize("idToken", tokens.id_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60, // 1 hora
