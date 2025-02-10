@@ -3,41 +3,44 @@ import cookie from 'cookie';
 export default async function handler(req, res) {
   try {
     const { code, state } = req.query;
+
     if (!code) {
       return res.status(400).json({ error: 'No se encontró el código de autorización' });
     }
 
+    // Debe coincidir con el registrado en Cognito
     const redirectUri = 'https://dashboard.total-remote-control.com/api/auth/callback';
 
-    // Importar dinámicamente openid-client
+    // Carga dinámica de openid-client
     const openidClientModule = await import('openid-client');
     console.log("openid-client module:", openidClientModule);
 
-    // Extraer las funciones que necesitamos
     const { discovery, authorizationCodeGrant } = openidClientModule;
     if (!discovery || !authorizationCodeGrant) {
       throw new Error("No se encontró 'discovery' o 'authorizationCodeGrant' en openid-client");
     }
 
-    // Descubrir la configuración de Cognito
+    // 1) Descubrir la configuración de Cognito
     const discovered = await discovery('https://cognito-idp.us-east-1.amazonaws.com/us-east-1_b0tpHM55u');
     console.log("discovered:", discovered);
 
-    // Comprobamos que devuelva al menos issuer y token_endpoint
     if (!discovered.issuer || !discovered.token_endpoint) {
       throw new Error("La discovery de Cognito no devolvió endpoints esperados");
     }
 
-    // Construimos el objeto URL con el issuer
-    const serverUrl = new URL(discovered.issuer);  // "server" debe ser un objeto de tipo URL
+    // 2) authorizationCodeGrant requiere 'server' como objeto URL que apunte al token endpoint
+    const tokenEndpointUrl = new URL(discovered.token_endpoint);
 
-    // Realizamos el intercambio (authorization code grant)
+    // 3) Llamada a authorizationCodeGrant
     const result = await authorizationCodeGrant({
-      server: serverUrl,             // Debe ser un objeto URL
-      code,                          // El código devuelto por Cognito
-      state,                         // El state devuelto
-      client_id: '4fbadbb2qqj15u0vf5dmauudbj', // Tu client_id
-      redirect_uri: redirectUri,     // Debe coincidir con Cognito
+      // 'server' debe ser el token endpoint en forma de URL
+      server: tokenEndpointUrl,
+      code,
+      state,
+      client_id: '4fbadbb2qqj15u0vf5dmauudbj', // tu client_id de Cognito
+      redirect_uri: redirectUri,
+      // Si fuera necesario, podrías pasar issuer: discovered.issuer, pero se ve que la librería
+      // principalmente requiere server para token endpoint.
     });
 
     console.log("authorizationCodeGrant result:", result);
@@ -56,7 +59,7 @@ export default async function handler(req, res) {
       sameSite: "strict",
     }));
 
-    // Redirigimos a la home
+    // Redirigimos al usuario a la raíz
     res.writeHead(302, { Location: "/" });
     res.end();
 
