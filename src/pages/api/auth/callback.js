@@ -16,6 +16,7 @@ export default async function handler(req, res) {
     // Cargar la librería openid-client de forma dinámica
     const openidClientModule = await import('openid-client');
     console.log("openid-client module:", openidClientModule);
+      
     
     // Intentar obtener Issuer de openid-client de dos formas: directamente o desde la propiedad default
     const Issuer = openidClientModule.Issuer || (openidClientModule.default && openidClientModule.default.Issuer);
