@@ -1,45 +1,44 @@
-// pages/api/auth/callback.js
-
 import { Issuer } from 'openid-client';
 import cookie from 'cookie';
 
 export default async function handler(req, res) {
   try {
-    // Extraer los parámetros de la URL.
-    // La URL completa está en req.url, que contiene el query string (después del ?)
+    // Extraer la parte de la query string de la URL (lo que viene después del '?')
     const queryString = req.url.split('?')[1];
     const params = new URLSearchParams(queryString);
-    const code = params.get('code');
-    const state = params.get('state');
+
+    // Convertir los parámetros a un objeto
+    const callbackParams = {};
+    for (const [key, value] of params.entries()) {
+      callbackParams[key] = value;
+    }
     
-    if (!code) {
+    // Verificar que exista el código de autorización
+    if (!callbackParams.code) {
       return res.status(400).json({ error: 'No se encontró el código de autorización' });
     }
-
-    // Descubrir la configuración del issuer (Cognito)
+    
+    // Descubrir la configuración del issuer de Cognito
     const issuer = await Issuer.discover('https://cognito-idp.us-east-1.amazonaws.com/us-east-1_b0tpHM55u');
     
-    // Configurar el cliente de OpenID Connect
+    // Configurar el cliente OpenID Connect sin client secret (Cognito generalmente no lo usa para aplicaciones web)
     const client = new issuer.Client({
       client_id: '4fbadbb2qqj15u0vf5dmauudbj',
-      // Cognito para aplicaciones web generalmente no usa client secret.
       redirect_uris: ['https://dashboard.total-remote-control.com/api/auth/callback'],
       response_types: ['code']
     });
-
-    // Realizar el intercambio del código por tokens.
-    // El primer parámetro es el redirect_uri que usaste, el segundo es la URL completa (req.url),
-    // y el tercer parámetro es un objeto de verificación (aquí, solo usamos state).
+    
+    // Realizar el intercambio del código por tokens
     const tokenSet = await client.callback(
       'https://dashboard.total-remote-control.com/api/auth/callback',
-      req.url,
-      { state }
+      callbackParams,
+      { state: callbackParams.state }
     );
     
-    // Extraer el id_token del tokenSet
+    // Extraer el id_token
     const idToken = tokenSet.id_token;
     
-    // Establecer la cookie httpOnly con el idToken
+    // Establecer una cookie httpOnly con el idToken
     res.setHeader("Set-Cookie", cookie.serialize("idToken", idToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
