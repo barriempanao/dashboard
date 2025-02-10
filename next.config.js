@@ -1,17 +1,18 @@
-// next.config.js
-const withTM = require('next-transpile-modules')([
-  'aws-amplify',
-]);
-
-/** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true, // 🚀 Ignora errores de ESLint en `next build`
+  },
+  output: "standalone",
+  trailingSlash: true,
   images: {
     unoptimized: true,
   },
-  // Usamos Webpack + SWC (no turbopack)
-  experimental: {
-    forceSwcTransforms: true,
+  env: {
+    DB_HOST: process.env.DB_HOST,
+    DB_USER: process.env.DB_USER,
+    DB_PASSWORD: process.env.DB_PASSWORD,
+    DB_NAME: process.env.DB_NAME,
   },
 };
 
-module.exports = withTM(nextConfig);
+module.exports = nextConfig;

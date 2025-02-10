@@ -1,58 +1,28 @@
-import { useState, useEffect } from 'react';
+// pages/dashboard/account.js
+import mysql from 'mysql2/promise';
+import jwt from 'jsonwebtoken';
+import jwksClient from 'jwks-rsa';
+import cookie from 'cookie';
+import { useState } from 'react';
 import Layout from '../../components/Layout';
 
-export default function Account() {
-  // Estado para almacenar los datos del usuario, incluyendo los nuevos campos.
-  const [user, setUser] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    address: '',
-    country: '',
-    tax_identifier: '',
-    phone: ''
-  });
-  const [loading, setLoading] = useState(true);
+export default function Account({ initialUser, error }) {
+  const [user, setUser] = useState(initialUser || {});
   const [message, setMessage] = useState('');
 
-  // Al montar la página, se obtiene la información del usuario desde el endpoint.
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const res = await fetch('/api/user', {
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include' // Se envían cookies o tokens de autenticación (Cognito)
-        });
-        if (!res.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-        const data = await res.json();
-        setUser(data);
-      } catch (error) {
-        console.error(error);
-        setMessage('Error loading user details');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchUser();
-  }, []);
-
-  // Manejar cambios en el formulario
   const handleChange = (e) => {
     setUser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // Manejar el envío del formulario para actualizar la cuenta
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
     try {
       const res = await fetch('/api/user', {
-        method: 'PUT', // O PATCH, según tu implementación en el endpoint
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),
-        credentials: 'include'
+        credentials: 'include',
       });
       if (!res.ok) {
         const err = await res.json();
@@ -61,15 +31,14 @@ export default function Account() {
         setMessage('Account updated successfully.');
       }
     } catch (error) {
-      console.error(error);
       setMessage('Error updating account.');
     }
   };
 
-  if (loading) {
+  if (error) {
     return (
       <Layout>
-        <p>Loading...</p>
+        <p>{error}</p>
       </Layout>
     );
   }
@@ -78,98 +47,82 @@ export default function Account() {
     <Layout>
       <h1>User Account</h1>
       {message && <p>{message}</p>}
-      <form onSubmit={handleSubmit} style={formStyle}>
-        <div style={formGroupStyle}>
-          <label htmlFor="first_name">First Name:</label>
-          <input
-            type="text"
-            id="first_name"
-            name="first_name"
-            value={user.first_name}
-            onChange={handleChange}
-          />
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="last_name">Last Name:</label>
-          <input
-            type="text"
-            id="last_name"
-            name="last_name"
-            value={user.last_name}
-            onChange={handleChange}
-          />
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={user.email}
-            disabled  // Por lo general, el email no se edita
-          />
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="address">Address:</label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={user.address}
-            onChange={handleChange}
-          />
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="country">Country:</label>
-          <input
-            type="text"
-            id="country"
-            name="country"
-            value={user.country}
-            onChange={handleChange}
-          />
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="tax_identifier">Tax Identifier:</label>
-          <input
-            type="text"
-            id="tax_identifier"
-            name="tax_identifier"
-            value={user.tax_identifier}
-            onChange={handleChange}
-          />
-        </div>
-        <div style={formGroupStyle}>
-          <label htmlFor="phone">Phone:</label>
-          <input
-            type="text"
-            id="phone"
-            name="phone"
-            value={user.phone}
-            onChange={handleChange}
-          />
-        </div>
-        <button type="submit" style={buttonStyle}>Update Account</button>
+      <form onSubmit={handleSubmit}>
+        <label>First Name:</label>
+        <input type="text" name="first_name" value={user.first_name || ""} onChange={handleChange} />
+
+        <label>Last Name:</label>
+        <input type="text" name="last_name" value={user.last_name || ""} onChange={handleChange} />
+
+        <label>Email:</label>
+        <input type="email" name="email" value={user.email || ""} disabled />
+
+        <label>Address:</label>
+        <input type="text" name="address" value={user.address || ""} onChange={handleChange} />
+
+        <button type="submit">Update Account</button>
       </form>
     </Layout>
   );
 }
 
-const formStyle = {
-  maxWidth: '600px',
-  marginTop: '20px'
-};
+export async function getServerSideProps(context) {
+  try {
+    // Parseamos la cookie
+    const cookies = cookie.parse(context.req.headers.cookie || "");
+    const { idToken } = cookies;
+    if (!idToken) {
+      // Si no existe el token, redirige a login
+      return { redirect: { destination: "/login", permanent: false } };
+    }
 
-const formGroupStyle = {
-  marginBottom: '15px',
-  display: 'flex',
-  flexDirection: 'column'
-};
+    // Configurar el cliente para obtener las claves de Cognito
+    const client = jwksClient({
+      jwksUri: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_b0tpHM55u/.well-known/jwks.json"
+    });
 
-const buttonStyle = {
-  padding: '10px 20px',
-  backgroundColor: '#2c3e50',
-  color: '#fff',
-  border: 'none',
-  cursor: 'pointer'
-};
+    function getKey(header, callback) {
+      client.getSigningKey(header.kid, function (err, key) {
+        if (err) return callback(err);
+        const signingKey = key.publicKey || key.rsaPublicKey;
+        callback(null, signingKey);
+      });
+    }
+
+    // Verificar el token
+    const decodedToken = await new Promise((resolve, reject) => {
+      jwt.verify(idToken, getKey, { algorithms: ["RS256"] }, (err, decoded) => {
+        if (err) return reject(err);
+        resolve(decoded);
+      });
+    });
+
+    const email = decodedToken.email;
+    if (!email) {
+      return { redirect: { destination: "/login", permanent: false } };
+    }
+
+    // Conectar a MySQL usando las variables de entorno
+    const connection = await mysql.createConnection({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+    });
+
+    const [rows] = await connection.execute(
+      'SELECT first_name, last_name, email, address FROM users WHERE email = ?',
+      [email]
+    );
+    connection.end();
+
+    if (rows.length === 0) {
+      return { props: { error: 'User not found' } };
+    }
+
+    return { props: { initialUser: rows[0] } };
+  } catch (error) {
+    console.error("Error en getServerSideProps:", error);
+    return { props: { error: 'Internal Server Error' } };
+  }
+}

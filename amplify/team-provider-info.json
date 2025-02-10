@@ -1,31 +1,49 @@
 {
-  "main": {
+  "temp": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-dashboard-main-2a4d2-authRole",
-      "UnauthRoleArn": "arn:aws:iam::376129874406:role/amplify-dashboard-main-2a4d2-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::376129874406:role/amplify-dashboard-main-2a4d2-authRole",
+      "AuthRoleName": "amplify-dashboard-temp-cb015-authRole",
+      "UnauthRoleArn": "arn:aws:iam::376129874406:role/amplify-dashboard-temp-cb015-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::376129874406:role/amplify-dashboard-temp-cb015-authRole",
       "Region": "us-east-1",
-      "DeploymentBucketName": "amplify-dashboard-main-2a4d2-deployment",
-      "UnauthRoleName": "amplify-dashboard-main-2a4d2-unauthRole",
-      "StackName": "amplify-dashboard-main-2a4d2",
-      "StackId": "arn:aws:cloudformation:us-east-1:376129874406:stack/amplify-dashboard-main-2a4d2/08b788c0-e651-11ef-83d0-0affd93c7cc7",
-      "AmplifyAppId": "d1mhlge4cnyea4"
+      "DeploymentBucketName": "amplify-dashboard-temp-cb015-deployment",
+      "UnauthRoleName": "amplify-dashboard-temp-cb015-unauthRole",
+      "StackName": "amplify-dashboard-temp-cb015",
+      "StackId": "arn:aws:cloudformation:us-east-1:376129874406:stack/amplify-dashboard-temp-cb015/7c47e570-e6f4-11ef-902d-0affce190f75",
+      "AmplifyAppId": "d3sjx76crxm2ev"
     },
     "categories": {
-      "hosting": {
-        "amplifyhosting": {
-          "appId": "d1mhlge4cnyea4",
-          "type": "manual"
-        }
-      },
       "auth": {
         "dashboardf5d878dd": {}
       },
-      "api": {
-        "dashboard": {}
-      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d3sjx76crxm2ev",
+          "type": "manual"
+        }
+      }
+    }
+  },
+  "main": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-dashboard-main-2f96d-authRole",
+      "UnauthRoleArn": "arn:aws:iam::376129874406:role/amplify-dashboard-main-2f96d-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::376129874406:role/amplify-dashboard-main-2f96d-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-dashboard-main-2f96d-deployment",
+      "UnauthRoleName": "amplify-dashboard-main-2f96d-unauthRole",
+      "StackName": "amplify-dashboard-main-2f96d",
+      "StackId": "arn:aws:cloudformation:us-east-1:376129874406:stack/amplify-dashboard-main-2f96d/d5cee710-e6f4-11ef-8ad0-0e6a9d97788b",
+      "AmplifyAppId": "d3sjx76crxm2ev"
+    },
+    "categories": {
       "storage": {
         "s35971a595": {}
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d3sjx76crxm2ev",
+          "type": "manual"
+        }
       }
     }
   }
