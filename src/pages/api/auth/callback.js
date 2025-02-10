@@ -1,3 +1,4 @@
+// con fetch Iker
 import cookie from 'cookie';
 
 // Función auxiliar para hacer un POST con x-www-form-urlencoded
@@ -20,6 +21,7 @@ async function postTokenEndpoint(tokenEndpoint, body) {
 
   return resp.json();
 }
+
 
 export default async function handler(req, res) {
   try {
