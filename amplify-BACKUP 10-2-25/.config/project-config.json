@@ -1,7 +1,5 @@
 {
-  "providers": [
-    "awscloudformation"
-  ],
+  "whyContinueWithGen1": "Prefer not to answer",
   "projectName": "dashboard",
   "version": "3.1",
   "frontend": "javascript",
@@ -9,9 +7,12 @@
     "framework": "react",
     "config": {
       "SourceDir": "src",
-      "DistributionDir": ".next",
+      "DistributionDir": "build",
       "BuildCommand": "npm run-script build",
       "StartCommand": "npm run-script start"
     }
-  }
+  },
+  "providers": [
+    "awscloudformation"
+  ]
 }

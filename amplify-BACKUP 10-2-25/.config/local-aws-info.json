@@ -1,0 +1,12 @@
+{
+  "temp": {
+    "configLevel": "project",
+    "useProfile": true,
+    "profileName": "default"
+  },
+  "main": {
+    "configLevel": "project",
+    "useProfile": true,
+    "profileName": "default"
+  }
+}
