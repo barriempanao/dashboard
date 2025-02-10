@@ -1,5 +1,26 @@
 import cookie from 'cookie';
 
+// Función auxiliar para hacer un POST con x-www-form-urlencoded
+async function postTokenEndpoint(tokenEndpoint, body) {
+  // 'body' es un objeto con { grant_type, code, client_id, redirect_uri, ... }
+  // convertimos a URLSearchParams
+  const params = new URLSearchParams(body);
+
+  const resp = await fetch(tokenEndpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params
+  });
+
+  if (!resp.ok) {
+    // Si el server respondió con 4xx o 5xx, lanzamos error
+    const errText = await resp.text();
+    throw new Error(`Token endpoint error: ${resp.status} - ${errText}`);
+  }
+
+  return resp.json();
+}
+
 export default async function handler(req, res) {
   try {
     const { code, state } = req.query;
@@ -8,63 +29,61 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No se encontró el código de autorización' });
     }
 
-    // Debe coincidir con Cognito
+    // Ajusta este redirectUri al que tengas configurado en Cognito
     const redirectUri = 'https://dashboard.total-remote-control.com/api/auth/callback';
 
-    // Dominio de tu Hosted UI, el que obtuviste en Cognito
-    // Por ejemplo: "https://auth.total-remote-control.com" o "https://us-east-1b0tphm55u.auth.us-east-1.amazoncognito.com"
-    const hostedUiDomain = 'https://auth.total-remote-control.com';
+    // Este es tu dominio de Hosted UI que ves en Cognito
+    // Ej: "https://auth.total-remote-control.com" o "https://us-east-1b0tphm55u.auth.us-east-1.amazoncognito.com"
+    const hostedUiDomain = "https://auth.total-remote-control.com";
 
-    // Carga dinámica de la librería
+    // Importamos dinámicamente openid-client
     const openidClientModule = await import('openid-client');
     console.log("openid-client module:", openidClientModule);
 
-    // Extraemos 'discovery' y 'genericGrantRequest'
-    const { discovery, genericGrantRequest } = openidClientModule;
-    if (!discovery || !genericGrantRequest) {
-      throw new Error("No se encontró 'discovery' o 'genericGrantRequest' en openid-client");
+    const { discovery } = openidClientModule;
+    if (!discovery) {
+      throw new Error("No se encontró 'discovery' en openid-client");
     }
 
-    // Descubrir la config de Cognito con el dominio de la Hosted UI
+    // Descubrir la config (URLs) del IdP (Cognito) usando el dominio Hosted UI
     const discovered = await discovery(hostedUiDomain);
     console.log("discovered:", discovered);
 
-    if (!discovered.token_endpoint) {
-      throw new Error("La discovery no devolvió 'token_endpoint'. Verifica tu dominio Hosted UI.");
+    // El token_endpoint es la dirección adonde hacemos POST para intercambiar el code por tokens
+    const tokenEndpoint = discovered.token_endpoint;
+    if (!tokenEndpoint) {
+      throw new Error("No se encontró 'token_endpoint' en la discovery. Verifica que el dominio sea correcto.");
     }
 
-    // Construimos un objeto URL a partir del token_endpoint descubierto
-    const tokenEndpoint = new URL(discovered.token_endpoint);
-
-    // Llamamos a genericGrantRequest con grant_type=authorization_code
-    const result = await genericGrantRequest({
-      server: tokenEndpoint,       // Debe ser un objeto URL
+    // Construimos el cuerpo de la petición (grant_type=authorization_code)
+    const body = {
       grant_type: 'authorization_code',
       code,
-      client_id: '4fbadbb2qqj15u0vf5dmauudbj', // Tu client_id en Cognito
-      redirect_uri: redirectUri,
-      // Puedes incluir 'scope' si lo necesitas, por ejemplo: scope: 'openid profile email'
-      // state si quieres (ya lo tenemos en la URL).
-      state,
-    });
+      client_id: '4fbadbb2qqj15u0vf5dmauudbj', // tu client_id
+      redirect_uri: redirectUri
+      // Podrías incluir 'scope' si lo requieres: scope: 'openid profile email'
+      // e incluso 'state' si Cognito lo requiere, pero usualmente no es obligatorio
+    };
 
-    console.log("genericGrantRequest result:", result);
+    // Hacemos la llamada POST manual con fetch
+    const tokensResponse = await postTokenEndpoint(tokenEndpoint, body);
+    console.log("tokensResponse:", tokensResponse);
 
-    // 'result.body' contendrá los tokens devueltos por Cognito
-    if (!result.body || !result.body.id_token) {
-      throw new Error("No se obtuvo el id_token en la respuesta del token endpoint");
+    // Deberíamos tener { access_token, id_token, token_type, expires_in, ...}
+    if (!tokensResponse.id_token) {
+      throw new Error("No se obtuvo id_token en la respuesta del token endpoint.");
     }
 
-    // Guardar el id_token en una cookie httpOnly
-    res.setHeader("Set-Cookie", cookie.serialize("idToken", result.body.id_token, {
+    // Guardamos el id_token en cookie httpOnly
+    res.setHeader("Set-Cookie", cookie.serialize("idToken", tokensResponse.id_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60,
+      maxAge: 60 * 60, // 1 hora
       path: "/",
       sameSite: "strict",
     }));
 
-    // Redirigir al usuario a la raíz
+    // Redirigimos a la raíz
     res.writeHead(302, { Location: "/" });
     res.end();
 
