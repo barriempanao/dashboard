@@ -1,6 +1,5 @@
 import cookie from 'cookie';
 
-// Función auxiliar: realizar POST con x-www-form-urlencoded
 async function postTokenEndpoint(tokenEndpoint, body) {
   const params = new URLSearchParams(body);
 
@@ -25,46 +24,29 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No se encontró el código de autorización' });
     }
 
-    // Ajusta este redirectUri al que tengas configurado en Cognito
     const redirectUri = 'https://dashboard.total-remote-control.com/api/auth/finalCallback';
-    // Este es tu dominio de Hosted UI. Por ejemplo, "https://auth.total-remote-control.com"
-    // o "https://xxxxx.auth.us-east-1.amazoncognito.com"
-    const hostedUiDomain = 'https://auth.total-remote-control.com';
 
-    // 1) Discovery manual: GET a `/.well-known/openid-configuration`
-    const discoveryUrl = `${hostedUiDomain}/.well-known/openid-configuration`;
-    const discoveryResp = await fetch(discoveryUrl);
-    if (!discoveryResp.ok) {
-      const errText = await discoveryResp.text();
-      throw new Error(`No se pudo obtener la discovery: ${discoveryResp.status} - ${errText}`);
-    }
-    const discovered = await discoveryResp.json();
+    // Asegúrate de usar tu "client_id" real
+    const clientId = '4fbadbb2qqj15u0vf5dmauudbj';
 
-    console.log("Discovery manual:", discovered);
+    // Hard-coded token endpoint de Cognito
+    // (normalmente: https://xxxx.auth.us-east-1.amazoncognito.com/oauth2/token)
+    const tokenEndpoint = 'https://us-east-1b0tphm55u.auth.us-east-1.amazoncognito.com/oauth2/token';
 
-    if (!discovered.token_endpoint) {
-      throw new Error("La discovery no devolvió token_endpoint; revisa tu dominio Hosted UI.");
-    }
-
-    // 2) Preparamos el body para el intercambio de code por tokens
     const body = {
       grant_type: 'authorization_code',
       code,
-      client_id: '4fbadbb2qqj15u0vf5dmauudbj', // tu client_id de Cognito
+      client_id: clientId,
       redirect_uri: redirectUri,
-      // scope: 'openid profile email', // opcional si requieres
-      // state, // opcional si Cognito lo requiere
     };
 
-    // 3) Hacemos el POST al token_endpoint
-    const tokensResponse = await postTokenEndpoint(discovered.token_endpoint, body);
+    const tokensResponse = await postTokenEndpoint(tokenEndpoint, body);
     console.log("tokensResponse:", tokensResponse);
 
     if (!tokensResponse.id_token) {
       throw new Error("No se recibió id_token en la respuesta del token endpoint");
     }
 
-    // 4) Guardar el id_token en una cookie httpOnly
     res.setHeader("Set-Cookie", cookie.serialize("idToken", tokensResponse.id_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -73,7 +55,6 @@ export default async function handler(req, res) {
       sameSite: "strict",
     }));
 
-    // 5) Redirigir a la raíz
     res.writeHead(302, { Location: "/" });
     res.end();
 
