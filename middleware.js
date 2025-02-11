@@ -11,3 +11,4 @@ export function middleware(req, event) {
 export const config = {
   matcher: ["/dashboard/:path*"], // Aplica este middleware a todas las rutas del dashboard
 };
+
