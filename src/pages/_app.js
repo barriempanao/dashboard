@@ -1,5 +1,4 @@
 
-import 'tailwindcss/tailwind.css';
 import '../styles/globals.css';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
