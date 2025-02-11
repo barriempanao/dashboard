@@ -1,10 +1,21 @@
-// src/pages/index.js
+import { useSession, signIn, signOut } from "next-auth/react";
 
-import dynamic from 'next/dynamic';
+// Ejemplo de uso en un componente:
+export default function HomeComponent() {
+  const { data: session, status } = useSession();
 
-// Importa el componente HomeComponent con SSR deshabilitado
-const HomeComponent = dynamic(() => import('../components/HomeComponent'), { ssr: false });
+  if (status === "loading") return <p>Cargando sesión...</p>;
 
-export default function HomePage() {
-  return <HomeComponent />;
+  return (
+    <div>
+      {!session ? (
+        <button onClick={() => signIn("cognito")}>Iniciar sesión</button>
+      ) : (
+        <>
+          <p>Bienvenido, {session.user.email}</p>
+          <button onClick={() => signOut()}>Cerrar sesión</button>
+        </>
+      )}
+    </div>
+  );
 }
