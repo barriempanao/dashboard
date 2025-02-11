@@ -30,7 +30,7 @@ export default async function handler(req, res) {
 
     // Configura tus datos (asegúrate de que estos valores coincidan con los configurados en Cognito)
     const redirectUri = 'https://dashboard.total-remote-control.com/api/auth/finalCallback';
-    const clientId = 'TU_CLIENT_ID'; // Reemplaza con tu client_id real
+    const clientId = '4fbadbb2qqj15u0vf5dmauudbj'; // Reemplaza con tu client_id real
     // Endpoint del token (verifica que el dominio sea el correcto de tu User Pool)
     const tokenEndpoint = 'https://us-east-1b0tphm55u.auth.us-east-1.amazoncognito.com/oauth2/token';
 
