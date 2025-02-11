@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch("https://us-east-1.b0tpHM55u.auth.us-east-1.amazoncognito.com/oauth2/token", {
+    const response = await fetch("https://us-east-1b0tpHM55u.auth.us-east-1.amazoncognito.com/oauth2/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
