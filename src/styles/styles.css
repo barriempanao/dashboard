@@ -17,12 +17,7 @@ body {
   color: #ecf0f1;
   min-height: 100vh;
   padding: 20px;
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
   transition: transform 0.3s ease-in-out;
-  z-index: 1000; /* Asegura que el sidebar esté sobre el contenido */
 }
 
 /* Restauramos los estilos de los enlaces en el sidebar */
@@ -47,20 +42,39 @@ body {
 
 /* Contenido principal */
 .main-content {
-  margin-left: 220px;
   flex: 1;
   padding: 20px;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+/* Solo en escritorio: el sidebar debe empujar el contenido */
+@media screen and (min-width: 1025px) {
+  .layout {
+    display: flex;
+  }
+
+  .sidebar {
+    position: relative; /* Eliminamos el fixed */
+  }
+
+  .main-content {
+    margin-left: 0; /* No se superpone, ocupa su espacio natural */
+  }
 }
 
 /* Sidebar en móviles: oculto por defecto */
 @media screen and (max-width: 1024px) {
   .sidebar {
+    position: fixed;
     transform: translateX(-100%);
     width: 220px;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
   }
 
   .sidebar.open {
