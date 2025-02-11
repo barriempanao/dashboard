@@ -26,6 +26,7 @@ export default async function handler(req, res) {
     res.setHeader('Set-Cookie', `session=${data.id_token}; Path=/; HttpOnly; Secure`);
     res.redirect('/');
   } catch (error) {
+    console.error('Auth error:', error); // ✅ Se imprime en consola para depuración
     res.status(500).json({ error: 'Authentication failed' });
   }
 }

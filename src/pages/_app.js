@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 
 export default function MyApp({ Component, pageProps }) {
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     const checkSession = async () => {
