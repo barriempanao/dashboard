@@ -1,4 +1,4 @@
-import cookie from 'cookie';
+const cookie = require('cookie');
 
 async function postTokenEndpoint(tokenEndpoint, body) {
   const params = new URLSearchParams(body);
