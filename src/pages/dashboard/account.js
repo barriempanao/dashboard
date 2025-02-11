@@ -30,7 +30,8 @@ export default function Account({ initialUser, error }) {
       } else {
         setMessage('Account updated successfully.');
       }
-    } catch (_error) {  // Renombramos 'error' a '_error' para indicar que no se usa
+    } catch {
+      // Usamos catch sin variable para evitar que ESLint reclame por variable no usada.
       setMessage('Error updating account.');
     }
   };
