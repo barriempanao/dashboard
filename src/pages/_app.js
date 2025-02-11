@@ -1,28 +1,23 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import "../styles/globals.css";
 
-const cleanUrl = (url) => url.replace(/\/+$/, ""); // Elimina barras finales
-
-const MyApp = ({ Component, pageProps }) => {
+function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      // Intentar obtener el token desde sessionStorage y cookies
-      const token = sessionStorage.getItem("authToken") || document.cookie.split('; ').find(row => row.startsWith("authToken="));
+    const token = document.cookie.split("; ").find(row => row.startsWith("access_token="));
 
-      if (!token) {
-        console.log("Usuario no autenticado, redirigiendo...");
-        const cognitoLogin = `${cleanUrl(process.env.NEXT_PUBLIC_COGNITO_DOMAIN)}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${encodeURIComponent(cleanUrl(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI))}`;
-        router.replace(cognitoLogin);
-      }
-    };
+    if (!token) {
+      router.push("https://auth.total-remote-control.com/login/continue?client_id=4fbadbb2qqj15u0vf5dmauudbj&response_type=code&scope=email+openid+profile&redirect_uri=https%3A%2F%2Fdashboard.total-remote-control.com%2Fapi%2Fauth%2Fcallback");
+    } else {
+      setAuthenticated(true);
+    }
+  }, []);
 
-    checkAuth();
-  }, [router]);
+  if (!authenticated) return <p>Loading...</p>;
 
   return <Component {...pageProps} />;
-};
+}
 
 export default MyApp;

@@ -2,36 +2,34 @@ export default async function handler(req, res) {
   const { code } = req.query;
 
   if (!code) {
-    return res.status(400).json({ error: "Authorization code missing" });
+    return res.status(400).json({ error: "No authorization code provided" });
   }
 
-  const cleanUrl = (url) => url.replace(/\/+$/, ""); // Elimina barras finales
+  try {
+    const response = await fetch("https://us-east-1.b0tpHM55u.auth.us-east-1.amazoncognito.com/oauth2/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: process.env.COGNITO_CLIENT_ID,
+        redirect_uri: process.env.COGNITO_REDIRECT_URI,
+        code,
+      }),
+    });
 
-  const tokenUrl = `${cleanUrl(process.env.NEXT_PUBLIC_COGNITO_DOMAIN)}/oauth2/token`;
+    const data = await response.json();
 
-  const response = await fetch(tokenUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      grant_type: "authorization_code",
-      client_id: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID,
-      code,
-      redirect_uri: cleanUrl(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI),
-    }),
-  });
+    if (data.error) {
+      return res.status(400).json({ error: "Error fetching tokens", details: data });
+    }
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    return res.status(400).json({ error: "Failed to retrieve token", details: data });
+    // Guardar en la sesión del cliente (localStorage) mediante una redirección con el token
+    res.setHeader("Set-Cookie", `access_token=${data.access_token}; Path=/; Secure; HttpOnly; SameSite=Strict`);
+    res.redirect("/dashboard");
+  } catch (error) {
+    console.error("Error during authentication callback:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-
-  // Guardamos el token en una cookie HTTP-Only para validaciones
-  res.setHeader("Set-Cookie", `authToken=${data.access_token}; Path=/; HttpOnly; Secure; SameSite=Strict`);
-
-  // Redirigir al dashboard después de guardar el token
-  res.redirect(302, process.env.NEXT_PUBLIC_NEXTAUTH_URL || "/dashboard");
 }
-

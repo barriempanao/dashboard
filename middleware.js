@@ -1,15 +1,13 @@
-import { NextResponse } from "next/server";
+export function middleware(req, event) {
+  const { cookies } = req;
 
-const cleanUrl = (url) => url.replace(/\/+$/, ""); // Elimina barras finales
-
-export function middleware(req) {
-  const token = req.cookies.get("authToken");
-
-  if (!token) {
-    console.log("Middleware detecta usuario no autenticado, redirigiendo...");
-    const cognitoLogin = `${cleanUrl(process.env.NEXT_PUBLIC_COGNITO_DOMAIN)}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${encodeURIComponent(cleanUrl(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI))}`;
-    return NextResponse.redirect(cognitoLogin);
+  if (!cookies.get("access_token")) {
+    return Response.redirect("https://auth.total-remote-control.com/login/continue?client_id=4fbadbb2qqj15u0vf5dmauudbj&response_type=code&scope=email+openid+profile&redirect_uri=https%3A%2F%2Fdashboard.total-remote-control.com%2Fapi%2Fauth%2Fcallback");
   }
 
-  return NextResponse.next();
+  return Response.next();
 }
+
+export const config = {
+  matcher: ["/dashboard/:path*"], // Aplica este middleware a todas las rutas del dashboard
+};
