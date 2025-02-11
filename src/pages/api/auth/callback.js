@@ -34,3 +34,4 @@ export default async function handler(req, res) {
   // Redirigir al dashboard después de guardar el token
   res.redirect(302, process.env.NEXT_PUBLIC_NEXTAUTH_URL || "/dashboard");
 }
+
