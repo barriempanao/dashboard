@@ -1,12 +1,22 @@
 export default async function handler(req, res) {
     try {
         const { code } = req.query;
+
         if (!code) {
             console.error("⚠️ No se recibió código de autenticación.");
             return res.status(400).json({ error: "No authorization code provided" });
         }
 
         console.log("🔹 Código de autenticación recibido:", code);
+
+        // Verificamos que las variables de entorno están cargadas
+        if (!process.env.COGNITO_DOMAIN || !process.env.COGNITO_CLIENT_ID || !process.env.COGNITO_REDIRECT_URI) {
+            console.error("❌ ERROR: Variables de entorno faltantes:");
+            console.error("COGNITO_DOMAIN:", process.env.COGNITO_DOMAIN);
+            console.error("COGNITO_CLIENT_ID:", process.env.COGNITO_CLIENT_ID);
+            console.error("COGNITO_REDIRECT_URI:", process.env.COGNITO_REDIRECT_URI);
+            return res.status(500).json({ error: "Server configuration error. Missing env variables." });
+        }
 
         const tokenEndpoint = `${process.env.COGNITO_DOMAIN}/oauth2/token`;
 
@@ -37,7 +47,7 @@ export default async function handler(req, res) {
         const tokenData = await response.json();
         console.log("✅ Tokens recibidos:", tokenData);
 
-        // Guardar el token en una cookie
+        // Guardamos el token en una cookie segura
         res.setHeader("Set-Cookie", `authToken=${tokenData.access_token}; Path=/; HttpOnly; Secure; SameSite=Lax`);
 
         return res.redirect(302, "/dashboard");
