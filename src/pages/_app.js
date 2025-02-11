@@ -1,22 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import "../styles/globals.css";
 
-export default function MyApp({ Component, pageProps }) {
-  const [loading, setLoading] = useState(true);
+const cleanUrl = (url) => url.replace(/\/+$/, ""); // Elimina barras finales
+
+const MyApp = ({ Component, pageProps }) => {
+  const router = useRouter();
 
   useEffect(() => {
-    const checkSession = async () => {
-      const session = sessionStorage.getItem("session");
-      if (!session) {
-        const cognitoLogin = `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI}`;
-        window.location.href = cognitoLogin;
-      } else {
-        setLoading(false);
+    const checkAuth = async () => {
+      const token = sessionStorage.getItem("authToken");
+      if (!token) {
+        const cognitoLogin = `${cleanUrl(process.env.NEXT_PUBLIC_COGNITO_DOMAIN)}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${encodeURIComponent(cleanUrl(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI))}`;
+        router.push(cognitoLogin);
       }
     };
-    checkSession();
-  }, []);
 
-  if (loading) return <p>Loading...</p>;
+    checkAuth();
+  }, [router]);
 
   return <Component {...pageProps} />;
-}
+};
+
+export default MyApp;
