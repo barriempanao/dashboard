@@ -3,6 +3,9 @@
 import crypto from 'crypto';
 import cookie from 'cookie';
 
+console.log("Cookie library import check:", cookie);
+console.log("Available keys in cookie module:", Object.keys(cookie || {}));
+
 export default async function handler(req, res) {
   try {
     // 1. Generar code_verifier aleatorio
