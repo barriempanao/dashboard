@@ -1,4 +1,4 @@
-// pages/dashboard/account.js
+// src/pages/dashboard/account.js
 import mysql from 'mysql2/promise';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
@@ -30,7 +30,7 @@ export default function Account({ initialUser, error }) {
       } else {
         setMessage('Account updated successfully.');
       }
-    } catch (error) {
+    } catch (_error) {  // Renombramos 'error' a '_error' para indicar que no se usa
       setMessage('Error updating account.');
     }
   };
@@ -49,16 +49,36 @@ export default function Account({ initialUser, error }) {
       {message && <p>{message}</p>}
       <form onSubmit={handleSubmit}>
         <label>First Name:</label>
-        <input type="text" name="first_name" value={user.first_name || ""} onChange={handleChange} />
+        <input
+          type="text"
+          name="first_name"
+          value={user.first_name || ""}
+          onChange={handleChange}
+        />
 
         <label>Last Name:</label>
-        <input type="text" name="last_name" value={user.last_name || ""} onChange={handleChange} />
+        <input
+          type="text"
+          name="last_name"
+          value={user.last_name || ""}
+          onChange={handleChange}
+        />
 
         <label>Email:</label>
-        <input type="email" name="email" value={user.email || ""} disabled />
+        <input
+          type="email"
+          name="email"
+          value={user.email || ""}
+          disabled
+        />
 
         <label>Address:</label>
-        <input type="text" name="address" value={user.address || ""} onChange={handleChange} />
+        <input
+          type="text"
+          name="address"
+          value={user.address || ""}
+          onChange={handleChange}
+        />
 
         <button type="submit">Update Account</button>
       </form>
