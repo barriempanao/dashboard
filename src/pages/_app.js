@@ -1,23 +1,26 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
-function MyApp({ Component, pageProps }) {
-  const router = useRouter();
-  const [authenticated, setAuthenticated] = useState(false);
+export default function MyApp({ Component, pageProps }) {
+    const [authenticated, setAuthenticated] = useState(false);
+    const router = useRouter();
 
-  useEffect(() => {
-    const token = document.cookie.split("; ").find(row => row.startsWith("access_token="));
+    useEffect(() => {
+        const checkAuth = async () => {
+            const response = await fetch('/api/auth/check');
+            const data = await response.json();
 
-    if (!token) {
-      router.push("https://auth.total-remote-control.com/login/continue?client_id=4fbadbb2qqj15u0vf5dmauudbj&response_type=code&scope=email+openid+profile&redirect_uri=https%3A%2F%2Fdashboard.total-remote-control.com%2Fapi%2Fauth%2Fcallback");
-    } else {
-      setAuthenticated(true);
-    }
-  }, []);
+            if (data.authenticated) {
+                setAuthenticated(true);
+            } else {
+                router.push('/api/auth/login');
+            }
+        };
 
-  if (!authenticated) return <p>Loading...</p>;
+        checkAuth();
+    }, []);
 
-  return <Component {...pageProps} />;
+    if (!authenticated) return <p>Cargando...</p>;
+
+    return <Component {...pageProps} />;
 }
-
-export default MyApp;

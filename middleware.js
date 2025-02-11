@@ -1,14 +1,15 @@
-export function middleware(req, event) {
-  const { cookies } = req;
+import { NextResponse } from 'next/server';
 
-  if (!cookies.get("access_token")) {
-    return Response.redirect("https://auth.total-remote-control.com/login/continue?client_id=4fbadbb2qqj15u0vf5dmauudbj&response_type=code&scope=email+openid+profile&redirect_uri=https%3A%2F%2Fdashboard.total-remote-control.com%2Fapi%2Fauth%2Fcallback");
-  }
+export function middleware(req) {
+    const authToken = req.cookies.get('authToken');
 
-  return Response.next();
+    if (!authToken) {
+        return NextResponse.redirect(new URL('/api/auth/login', req.url));
+    }
+
+    return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"], // Aplica este middleware a todas las rutas del dashboard
+    matcher: ['/dashboard/:path*'],
 };
-
