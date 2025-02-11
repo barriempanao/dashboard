@@ -1,18 +1,17 @@
+// next.config.js
+
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true, // 🚀 Ignora errores de ESLint en `next build`
-  },
-  output: "standalone",
-  trailingSlash: true,
-  images: {
-    unoptimized: true,
-  },
-  env: {
-    DB_HOST: process.env.DB_HOST,
-    DB_USER: process.env.DB_USER,
-    DB_PASSWORD: process.env.DB_PASSWORD,
-    DB_NAME: process.env.DB_NAME,
-  },
-};
+  async rewrites() {
+    return [
+      {
+        // Cuando Cognito redirija a /api/auth/finalCallback,
+        // reescribimos a la ruta de callback de NextAuth para el proveedor "cognito".
+        source: '/api/auth/finalCallback',
+        destination: '/api/auth/callback/cognito'
+      }
+    ]
+  }
+}
 
 module.exports = nextConfig;

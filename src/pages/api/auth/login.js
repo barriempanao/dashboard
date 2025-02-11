@@ -1,8 +1,9 @@
 // pages/api/auth/login.js
 
 import crypto from 'crypto';
-import { parse, serialize } from 'cookie';
+import * as cookie from 'cookie';
 
+console.log('Cookie module keys:', Object.keys(cookie));
 console.log("Cookie library import check:", cookie);
 console.log("Available keys in cookie module:", Object.keys(cookie || {}));
 
