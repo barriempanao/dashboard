@@ -9,10 +9,13 @@ const MyApp = ({ Component, pageProps }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = sessionStorage.getItem("authToken");
+      // Intentar obtener el token desde sessionStorage y cookies
+      const token = sessionStorage.getItem("authToken") || document.cookie.split('; ').find(row => row.startsWith("authToken="));
+
       if (!token) {
+        console.log("Usuario no autenticado, redirigiendo...");
         const cognitoLogin = `${cleanUrl(process.env.NEXT_PUBLIC_COGNITO_DOMAIN)}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${encodeURIComponent(cleanUrl(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI))}`;
-        router.push(cognitoLogin);
+        router.replace(cognitoLogin);
       }
     };
 

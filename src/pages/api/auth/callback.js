@@ -28,6 +28,9 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Failed to retrieve token", details: data });
   }
 
+  // Guardamos el token en una cookie HTTP-Only para validaciones
   res.setHeader("Set-Cookie", `authToken=${data.access_token}; Path=/; HttpOnly; Secure; SameSite=Strict`);
-  res.redirect(302, "/dashboard");
+
+  // Redirigir al dashboard después de guardar el token
+  res.redirect(302, process.env.NEXT_PUBLIC_NEXTAUTH_URL || "/dashboard");
 }
