@@ -7,3 +7,4 @@ export default function Login() {
   }, []);
 
   return <p>Redirigiendo...</p>;
+}
