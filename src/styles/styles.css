@@ -56,6 +56,7 @@ body {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: margin-left 0.3s ease-in-out;
 }
 
 /* Botón para abrir/cerrar sidebar en móviles */
@@ -64,13 +65,14 @@ body {
   background: #2c3e50;
   color: white;
   border: none;
-  padding: 10px;
+  padding: 10px 15px;
   position: fixed;
   top: 10px;
   left: 10px;
   cursor: pointer;
-  z-index: 1000;
+  z-index: 1001;
   font-size: 16px;
+  border-radius: 5px;
 }
 
 /* Responsividad */
@@ -81,7 +83,7 @@ body {
 
   .sidebar {
     transform: translateX(-100%);
-    width: 200px;
+    width: 220px;
   }
 
   .sidebar.open {
@@ -90,6 +92,7 @@ body {
 
   .main-content {
     margin-left: 0;
+    width: 100%;
   }
 }
 
