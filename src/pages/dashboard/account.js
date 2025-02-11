@@ -35,50 +35,46 @@ export default function Account({ initialUser, error }) {
 
   return (
     <Layout>
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">Account Details</h2>
+      <div className="main-content">
+        <div className="form-container">
+          <h2>Account Details</h2>
 
           {/* Mensaje de estado */}
-          {message && <p className={`p-3 mb-4 text-sm text-center ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'} rounded-lg`}>{message}</p>}
+          {message && <p className="message">{message}</p>}
 
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
             {/* Email */}
-            <div>
-              <label className="block text-gray-600 font-medium mb-1">Email:</label>
-              <input type="email" name="email" value={user.email || ''} readOnly className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed shadow-sm" />
+            <div className="form-group">
+              <label>Email:</label>
+              <input type="email" name="email" value={user.email || ''} readOnly />
             </div>
 
             {/* Nombre y Apellido */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-600 font-medium mb-1">First Name:</label>
-                <input type="text" name="first_name" value={user.first_name || ''} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300 shadow-sm" />
+            <div className="form-grid">
+              <div className="form-group">
+                <label>First Name:</label>
+                <input type="text" name="first_name" value={user.first_name || ''} onChange={handleChange} />
               </div>
-              <div>
-                <label className="block text-gray-600 font-medium mb-1">Last Name:</label>
-                <input type="text" name="last_name" value={user.last_name || ''} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300 shadow-sm" />
+              <div className="form-group">
+                <label>Last Name:</label>
+                <input type="text" name="last_name" value={user.last_name || ''} onChange={handleChange} />
               </div>
             </div>
 
             {/* Teléfono y País */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-600 font-medium mb-1">Phone:</label>
-                <input type="text" name="phone" value={user.phone || ''} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300 shadow-sm" />
+            <div className="form-grid">
+              <div className="form-group">
+                <label>Phone:</label>
+                <input type="text" name="phone" value={user.phone || ''} onChange={handleChange} />
               </div>
-              <div>
-                <label className="block text-gray-600 font-medium mb-1">Country:</label>
-                <input type="text" name="country" value={user.country || ''} onChange={handleChange} className="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300 shadow-sm" />
+              <div className="form-group">
+                <label>Country:</label>
+                <input type="text" name="country" value={user.country || ''} onChange={handleChange} />
               </div>
             </div>
 
             {/* Botón de actualización */}
-            <div className="flex justify-center">
-              <button type="submit" className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition-all duration-300">
-                Update
-              </button>
-            </div>
+            <button type="submit" className="submit-btn">Update</button>
           </form>
         </div>
       </div>
