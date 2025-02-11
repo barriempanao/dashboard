@@ -25,16 +25,24 @@ body {
   z-index: 1000; /* Asegura que el sidebar esté sobre el contenido */
 }
 
-/* Sidebar oculto en pantallas más pequeñas */
-@media screen and (max-width: 1024px) { /* Aumentado para evitar el problema en laptops */
-  .sidebar {
-    transform: translateX(-100%);
-    width: 220px;
-  }
+/* Restauramos los estilos de los enlaces en el sidebar */
+.sidebar ul {
+  list-style: none; /* Elimina los puntos */
+  padding: 0;
+}
 
-  .sidebar.open {
-    transform: translateX(0);
-  }
+.sidebar li {
+  margin-bottom: 15px;
+}
+
+.sidebar a {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.sidebar a:hover {
+  color: #fff;
 }
 
 /* Contenido principal */
@@ -48,8 +56,17 @@ body {
   transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
-/* Ajustar contenido cuando el sidebar está oculto en móviles */
+/* Sidebar en móviles: oculto por defecto */
 @media screen and (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 220px;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
   .main-content {
     margin-left: 0 !important;
     width: 100% !important;
@@ -72,41 +89,9 @@ body {
   border-radius: 5px;
 }
 
-/* Mostrar el botón en dispositivos más pequeños */
+/* Mostrar el botón en móviles */
 @media screen and (max-width: 1024px) {
   .menu-toggle {
     display: block;
   }
-}
-
-/* Formulario */
-.form-container {
-  max-width: 400px;
-  margin: auto;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button {
-  width: 100%;
-  padding: 10px;
-  background: #3498db;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #2980b9;
 }
