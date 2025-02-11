@@ -6,12 +6,12 @@ const nextConfig = {
     return [
       {
         // Cuando Cognito redirija a /api/auth/finalCallback,
-        // reescribimos a la ruta de callback de NextAuth para el proveedor "cognito".
+        // reescribe la URL a la ruta de callback de NextAuth.
         source: '/api/auth/finalCallback',
-        destination: '/api/auth/callback/cognito'
-      }
-    ]
-  }
-}
+        destination: '/api/auth/callback/cognito',
+      },
+    ];
+  },
+};
 
 module.exports = nextConfig;
