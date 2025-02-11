@@ -5,18 +5,15 @@ import Sidebar from './Sidebar';
 
 export default function Layout({ children }) {
   return (
-    <div className="flex h-screen">
+    <div className="layout">
       <Sidebar />
-      <div className="flex-1 flex flex-col">
+      <main className="main-content">
         <Header />
-        <main className="flex-1 p-6 bg-gray-100 text-gray-900">
-          {children}
-        </main>
-      </div>
+        {children}
+      </main>
     </div>
   );
 }
-
 
 /*
 import Header from './Header';

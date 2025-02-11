@@ -1,38 +1,29 @@
 // components/Sidebar.js
 
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function Sidebar() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <aside className="w-56 bg-gray-800 text-white min-h-screen p-5">
-      <nav>
-        <ul className="space-y-4">
-          <li>
-            <Link href="/dashboard/account" className="block text-gray-300 hover:text-white">
-              User Account
-            </Link>
-          </li>
-          <li>
-            <Link href="/dashboard/licenses" className="block text-gray-300 hover:text-white">
-              Licenses
-            </Link>
-          </li>
-          <li>
-            <Link href="/dashboard/devices" className="block text-gray-300 hover:text-white">
-              Authorized Devices
-            </Link>
-          </li>
-          <li>
-            <Link href="/dashboard/software" className="block text-gray-300 hover:text-white">
-              Software
-            </Link>
-          </li>
-        </ul>
-      </nav>
-    </aside>
+    <>
+      <button className="menu-toggle" onClick={() => setIsOpen(!isOpen)}>
+        ☰ Menu
+      </button>
+      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+        <nav>
+          <ul>
+            <li><Link href="/dashboard/account">User Account</Link></li>
+            <li><Link href="/dashboard/licenses">Licenses</Link></li>
+            <li><Link href="/dashboard/devices">Authorized Devices</Link></li>
+            <li><Link href="/dashboard/software">Software</Link></li>
+          </ul>
+        </nav>
+      </aside>
+    </>
   );
 }
-
 
 /*
 import Link from 'next/link';
