@@ -14,10 +14,10 @@ export default function Sidebar() {
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         <nav>
           <ul>
-            <li><Link href="/dashboard/account">User Account</Link></li>
-            <li><Link href="/dashboard/licenses">Licenses</Link></li>
-            <li><Link href="/dashboard/devices">Authorized Devices</Link></li>
-            <li><Link href="/dashboard/software">Software</Link></li>
+            <li><Link href="/dashboard/account" onClick={() => setIsOpen(false)}>User Account</Link></li>
+            <li><Link href="/dashboard/licenses" onClick={() => setIsOpen(false)}>Licenses</Link></li>
+            <li><Link href="/dashboard/devices" onClick={() => setIsOpen(false)}>Authorized Devices</Link></li>
+            <li><Link href="/dashboard/software" onClick={() => setIsOpen(false)}>Software</Link></li>
           </ul>
         </nav>
       </aside>

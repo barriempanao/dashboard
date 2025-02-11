@@ -6,8 +6,8 @@ body {
   margin: 0;
   padding: 0;
   display: flex;
-  flex-direction: row;
   min-height: 100vh;
+  overflow-x: hidden; /* Evita desplazamientos horizontales */
 }
 
 /* Sidebar */
@@ -22,30 +22,19 @@ body {
   top: 0;
   bottom: 0;
   transition: transform 0.3s ease-in-out;
+  z-index: 1000; /* Asegura que el sidebar esté sobre el contenido */
 }
 
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
+/* Sidebar oculto en pantallas más pequeñas */
+@media screen and (max-width: 1024px) { /* Aumentado para evitar el problema en laptops */
+  .sidebar {
+    transform: translateX(-100%);
+    width: 220px;
+  }
 
-.sidebar li {
-  margin-bottom: 15px;
-}
-
-.sidebar a {
-  color: #ecf0f1;
-  text-decoration: none;
-}
-
-.sidebar a:hover {
-  color: #fff;
-}
-
-/* Layout */
-.layout {
-  display: flex;
-  width: 100%;
+  .sidebar.open {
+    transform: translateX(0);
+  }
 }
 
 /* Contenido principal */
@@ -56,7 +45,15 @@ body {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: margin-left 0.3s ease-in-out;
+  transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+/* Ajustar contenido cuando el sidebar está oculto en móviles */
+@media screen and (max-width: 1024px) {
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
 }
 
 /* Botón para abrir/cerrar sidebar en móviles */
@@ -75,24 +72,10 @@ body {
   border-radius: 5px;
 }
 
-/* Responsividad */
-@media screen and (max-width: 768px) {
+/* Mostrar el botón en dispositivos más pequeños */
+@media screen and (max-width: 1024px) {
   .menu-toggle {
     display: block;
-  }
-
-  .sidebar {
-    transform: translateX(-100%);
-    width: 220px;
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .main-content {
-    margin-left: 0;
-    width: 100%;
   }
 }
 
