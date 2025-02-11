@@ -1,6 +1,7 @@
 // src/pages/dashboard/account.js
 import { useState } from 'react';
 import Layout from '../../components/Layout';
+import mysql from 'mysql2/promise'; // Uso de import en lugar de require
 
 export default function Account({ initialUser, error }) {
   const [user, setUser] = useState(initialUser || {});
@@ -21,12 +22,12 @@ export default function Account({ initialUser, error }) {
         credentials: 'include',
       });
       if (!res.ok) {
-        const err = await res.json();
-        setMessage(`Error: ${err.error}`);
+        const errResponse = await res.json();
+        setMessage(`Error: ${errResponse.error}`);
       } else {
         setMessage('Account updated successfully.');
       }
-    } catch (err) {
+    } catch {
       setMessage('An unexpected error occurred.');
     }
   };
@@ -59,8 +60,6 @@ export default function Account({ initialUser, error }) {
 
 // Obtener datos del primer usuario en la base de datos
 export async function getServerSideProps() {
-  const mysql = require('mysql2/promise');
-
   try {
     const connection = await mysql.createConnection({
       host: 'total-remote-sql-database.ccj4go2eagl0.us-east-1.rds.amazonaws.com',
