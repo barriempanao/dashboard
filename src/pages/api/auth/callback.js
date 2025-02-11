@@ -34,7 +34,7 @@ export default async function handler(req, res) {
             maxAge: 60 * 60 * 24 * 30, // 30 días
         }));
 
-        res.redirect(302, '/dashboard');
+        res.redirect(302, '/');
     } catch (error) {
         console.error('Auth callback error:', error);
         return res.status(500).json({ error: 'Error processing authentication' });
