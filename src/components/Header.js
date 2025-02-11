@@ -1,8 +1,26 @@
 // components/Header.js
+import Link from 'next/link';
+import Image from 'next/image';
+
+export default function Header() {
+  return (
+    <header className="bg-white border-b border-gray-200 shadow-sm p-4 flex items-center">
+      <Link href="https://total-remote-control.com">
+        <Image
+          src="/logo.png"
+          alt="Total Remote Control"
+          width={100}
+          height={100}
+          className="h-16 w-auto cursor-pointer"
+        />
+      </Link>
+    </header>
+  );
+}
 
 
 
-
+/*
 import Link from 'next/link';
 import Image from 'next/image'; // Importar next/image
 
@@ -34,3 +52,4 @@ const logoStyle = {
   cursor: 'pointer'
 };
 
+*/
