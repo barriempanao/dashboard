@@ -22,3 +22,4 @@ export default function Login() {
 
   return <p>Redirigiendo a la página de autenticación...</p>;
 }
+
