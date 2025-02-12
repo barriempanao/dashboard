@@ -27,6 +27,7 @@ function getKey(header, callback) {
 async function verifyToken(req) {
   const cookies = cookie.parse(req.headers.cookie || "");
   const authToken = cookies.authToken;  // ✅ Corregido a `authToken`
+    console.log("🔍 [VERIFY] Token recibido en verifyToken:", authToken);
   
   if (!authToken) {
     throw new Error("No token found");
@@ -45,6 +46,15 @@ async function verifyToken(req) {
 
 export default async function handler(req, res) {
   try {
+      console.log("🔍 [USER] Headers recibidos:", req.headers);
+          console.log("🔍 [USER] Cookies recibidas:", req.headers.cookie);
+          
+      const cookies = cookie.parse(req.headers.cookie || "");
+      const authToken = cookies.authToken;
+      console.log("🔍 [USER] authToken extraído:", authToken);
+      
+      
+      
     const decodedToken = await verifyToken(req);
       const email = decodedToken.email || decodedToken["cognito:username"];
       if (!email) {

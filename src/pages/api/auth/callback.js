@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         res.setHeader('Set-Cookie', serialize('authToken', data.id_token, {
             httpOnly: true,
             secure: true,
-            sameSite: 'None',
+            sameSite: 'Strict',
             path: '/',
             maxAge: 60 * 60 * 24 * 30, // 30 días
         }));
