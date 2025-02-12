@@ -61,6 +61,7 @@ async function verifyToken(req) {
 }
 
 
+
 export default async function handler(req, res) {
   try {
     console.log("🔍 [USER] Headers recibidos:", req.headers);
