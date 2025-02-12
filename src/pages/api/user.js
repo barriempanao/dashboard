@@ -26,26 +26,31 @@ function getKey(header, callback) {
 
 async function verifyToken(req) {
   const cookies = cookie.parse(req.headers.cookie || "");
-  const { idToken } = cookies;
-  if (!idToken) {
+  const authToken = cookies.authToken;  // ✅ Corregido a `authToken`
+  
+  if (!authToken) {
     throw new Error("No token found");
   }
-  const decoded = await new Promise((resolve, reject) => {
-    jwt.verify(idToken, getKey, { algorithms: ["RS256"] }, (err, decoded) => {
-      if (err) return reject(err);
+
+  return new Promise((resolve, reject) => {
+    jwt.verify(authToken, getKey, { algorithms: ["RS256"] }, (err, decoded) => {
+      if (err) {
+        console.error("JWT Verification Error:", err);
+        return reject(new Error("Invalid token"));
+      }
       resolve(decoded);
     });
   });
-  return decoded;
 }
 
 export default async function handler(req, res) {
   try {
     const decodedToken = await verifyToken(req);
-    const email = decodedToken.email;
-    if (!email) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+      const email = decodedToken.email || decodedToken["cognito:username"];
+      if (!email) {
+        console.error("JWT missing email:", decodedToken);
+        return res.status(401).json({ error: 'Unauthorized - No email found in token' });
+      }
 
     if (req.method === 'GET') {
       return getUser(req, res, email);

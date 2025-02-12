@@ -115,6 +115,17 @@ body {
   max-width: 450px;
   width: 100%;
   text-align: center;
+  position: relative; /* Solucionamos el problema de fondo duplicado */
+  z-index: 10; /* Asegura que esté sobre otros elementos */
+}
+
+.main-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
 }
 
 /* Título */

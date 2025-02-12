@@ -82,6 +82,40 @@ export default function Account({ initialUser, error }) {
   );
 }
 
+
+// 🔹 Obtener los datos del usuario autenticado desde la base de datos
+export async function getServerSideProps(context) {
+  try {
+    const { req } = context;
+    const token = req.cookies['auth-token']; // 🔹 Extraer token del usuario autenticado
+
+    if (!token) {
+      return { props: { initialUser: null, error: 'Not authenticated' } };
+    }
+
+    // 🔹 Consultar el usuario autenticado en la base de datos
+    const connection = await mysql.createConnection({
+      host: 'total-remote-sql-database.ccj4go2eagl0.us-east-1.rds.amazonaws.com',
+      user: 'admin',
+      password: 'Meekeat1073!!',
+      database: 'total_remote_control',
+    });
+
+    const [rows] = await connection.execute('SELECT * FROM users WHERE auth_token = ?', [token]);
+    await connection.end();
+
+    if (rows.length === 0) {
+      return { props: { initialUser: null, error: 'User not found' } };
+    }
+
+    return { props: { initialUser: rows[0] } };
+  } catch (error) {
+    return { props: { initialUser: null, error: error.message } };
+  }
+}
+
+
+/*
 // 🔹 OBTENER DATOS DEL PRIMER USUARIO EN LA BASE DE DATOS 🔹
 export async function getServerSideProps() {
   try {
@@ -104,3 +138,4 @@ export async function getServerSideProps() {
     return { props: { initialUser: null, error: error.message } };
   }
 }
+*/
