@@ -26,13 +26,19 @@ function getKey(header, callback) {
 
 
 async function verifyToken(req) {
+  // Verifica que las cookies existan
+  if (!req.headers.cookie) {
+    console.error("❌ [VERIFY] No se encontraron cookies en la petición.");
+    throw new Error("No token found");
+  }
+
   const cookies = cookie.parse(req.headers.cookie || "");
   const authToken = cookies.authToken;
 
-  console.log("🔍 [VERIFY] Token recibido:", authToken);
+  console.log("🔍 [VERIFY] Token recibido en verifyToken:", authToken);
 
   if (!authToken) {
-    console.error("❌ [VERIFY] No se encontró token en la cookie.");
+    console.error("❌ [VERIFY] No se encontró authToken en las cookies.");
     throw new Error("No token found");
   }
 
@@ -47,19 +53,13 @@ async function verifyToken(req) {
       });
     });
 
-    console.log("✅ [VERIFY] Token decodificado:", decoded);
-
-    if (!decoded.email) {
-      console.warn("⚠️ [VERIFY] No se encontró el email en el token. Usando 'cognito:username'");
-    }
-
+    console.log("✅ [VERIFY] Token decodificado correctamente:", decoded);
     return decoded;
   } catch (error) {
     console.error("❌ [VERIFY] Error general en verifyToken:", error);
     throw new Error("Invalid token");
   }
 }
-
 
 
 export default async function handler(req, res) {
