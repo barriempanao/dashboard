@@ -48,13 +48,18 @@ export async function getServerSideProps({ req }) {
       throw new Error('Email no encontrado en el token');
     }
 
-    // Construye la URL absoluta usando la información de la request
+    // Construye la URL absoluta usando el protocolo y host de la request
     const protocol = req.headers['x-forwarded-proto'] || 'http';
     const host = req.headers.host;
     const baseUrl = `${protocol}://${host}`;
 
-    // Llama a la API interna para obtener los datos del usuario
-    const res = await fetch(`${baseUrl}/api/user?email=${email}`);
+    // Llama a la API interna y reenvía las cookies de la request original
+    const res = await fetch(`${baseUrl}/api/user?email=${email}`, {
+      headers: {
+        // Importante: reenviar la cabecera cookie para que la API pueda parsearla
+        cookie: req.headers.cookie || '',
+      },
+    });
     const userData = await res.json();
 
     return {
