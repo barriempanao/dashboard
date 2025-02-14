@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
+import Layout from '../../components/Layout'; // Ajusta la ruta si es necesario
 
 // URL del JWKS de Cognito (ajusta según tu configuración)
 const COGNITO_JWKS_URL = 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_b0tpHM55u/.well-known/jwks.json';
@@ -21,7 +22,6 @@ function getKey(header, callback) {
   });
 }
 
-// Esta función se ejecuta en el servidor antes de renderizar la página
 export async function getServerSideProps({ req }) {
   // Extrae el token de la cookie 'authToken'
   const token = req.cookies.authToken;
@@ -48,12 +48,12 @@ export async function getServerSideProps({ req }) {
       throw new Error('Email no encontrado en el token');
     }
 
-    // Construye la URL absoluta usando el protocolo y host de la request
+    // Construye la URL absoluta usando la información de la request
     const protocol = req.headers['x-forwarded-proto'] || 'http';
     const host = req.headers.host;
     const baseUrl = `${protocol}://${host}`;
 
-    // Realiza la petición a la API interna usando la URL absoluta
+    // Llama a la API interna para obtener los datos del usuario
     const res = await fetch(`${baseUrl}/api/user?email=${email}`);
     const userData = await res.json();
 
@@ -73,45 +73,45 @@ export async function getServerSideProps({ req }) {
   }
 }
 
-// Componente React que muestra la información del usuario
 export default function Account({ user }) {
-  console.log('Renderizando Account.js con user:', user);
   return (
-    <div>
-      <h1>Cuenta del Usuario</h1>
-      {user ? (
-        <div>
-          <p>
-            <strong>Email:</strong> {user.email}
-          </p>
-          <p>
-            <strong>Nombre:</strong> {user.first_name || 'No disponible'} {user.last_name || ''}
-          </p>
-          <p>
-            <strong>Teléfono:</strong> {user.phone || 'No disponible'}
-          </p>
-          <p>
-            <strong>Dirección:</strong> {user.address || 'No disponible'}
-          </p>
-          <p>
-            <strong>Identificación Fiscal:</strong> {user.tax_identifier || 'No disponible'}
-          </p>
-          <p>
-            <strong>País:</strong> {user.country || 'No disponible'}
-          </p>
-          <p>
-            <strong>Fecha de Nacimiento:</strong> {user.date_of_birth || 'No disponible'}
-          </p>
-          <p>
-            <strong>Rol:</strong> {user.role || 'No disponible'}
-          </p>
-          <p>
-            <strong>Fecha de Creación:</strong> {user.created_at || 'No disponible'}
-          </p>
-        </div>
-      ) : (
-        <p>No se encontraron datos del usuario.</p>
-      )}
-    </div>
+    <Layout>
+      <div>
+        <h1>Cuenta del Usuario</h1>
+        {user ? (
+          <div>
+            <p>
+              <strong>Email:</strong> {user.email}
+            </p>
+            <p>
+              <strong>Nombre:</strong> {user.first_name || 'No disponible'} {user.last_name || ''}
+            </p>
+            <p>
+              <strong>Teléfono:</strong> {user.phone || 'No disponible'}
+            </p>
+            <p>
+              <strong>Dirección:</strong> {user.address || 'No disponible'}
+            </p>
+            <p>
+              <strong>Identificación Fiscal:</strong> {user.tax_identifier || 'No disponible'}
+            </p>
+            <p>
+              <strong>País:</strong> {user.country || 'No disponible'}
+            </p>
+            <p>
+              <strong>Fecha de Nacimiento:</strong> {user.date_of_birth || 'No disponible'}
+            </p>
+            <p>
+              <strong>Rol:</strong> {user.role || 'No disponible'}
+            </p>
+            <p>
+              <strong>Fecha de Creación:</strong> {user.created_at || 'No disponible'}
+            </p>
+          </div>
+        ) : (
+          <p>No se encontraron datos del usuario.</p>
+        )}
+      </div>
+    </Layout>
   );
 }
