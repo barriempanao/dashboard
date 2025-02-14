@@ -67,3 +67,17 @@ export async function getServerSideProps({ req }) {
         };
     }
 }
+
+// ✅ Agregar un componente React como exportación por defecto
+export default function Account({ user }) {
+    return (
+        <div>
+            <h1>Cuenta</h1>
+            {user ? (
+                <p>Email: {user.email}</p>
+            ) : (
+                <p>No se encontraron datos del usuario.</p>
+            )}
+        </div>
+    );
+}
