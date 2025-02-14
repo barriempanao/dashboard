@@ -72,6 +72,8 @@ export async function getServerSideProps({ req }) {
 
 // ✅ Componente de cuenta del usuario
 export default function Account({ user }) {
+    console.log("Renderizando Account.js con user:", user);
+
     return (
         <div>
             <h1>Cuenta del Usuario</h1>
