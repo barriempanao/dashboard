@@ -33,7 +33,7 @@ export async function getServerSideProps({ req }) {
     }
 
     try {
-        // 🔍 Verificar el token usando Cognito JWKS (sin clave secreta)
+        // 🔍 Verificar el token usando Cognito JWKS
         const decoded = await new Promise((resolve, reject) => {
             jwt.verify(token, getKey, { algorithms: ['RS256'] }, (err, decodedToken) => {
                 if (err) reject(err);
@@ -50,6 +50,8 @@ export async function getServerSideProps({ req }) {
         // 🔍 Buscar usuario en la base de datos con el email
         const res = await fetch(`${process.env.API_BASE_URL}/api/user?email=${email}`);
         const userData = await res.json();
+
+        console.log("Datos del usuario en account.js:", userData);
 
         return {
             props: {
@@ -68,13 +70,23 @@ export async function getServerSideProps({ req }) {
     }
 }
 
-// ✅ Agregar un componente React como exportación por defecto
+// ✅ Componente de cuenta del usuario
 export default function Account({ user }) {
     return (
         <div>
-            <h1>Cuenta</h1>
+            <h1>Cuenta del Usuario</h1>
             {user ? (
-                <p>Email: {user.email}</p>
+                <div>
+                    <p><strong>Email:</strong> {user.email}</p>
+                    <p><strong>Nombre:</strong> {user.first_name || "No disponible"} {user.last_name || ""}</p>
+                    <p><strong>Teléfono:</strong> {user.phone || "No disponible"}</p>
+                    <p><strong>Dirección:</strong> {user.address || "No disponible"}</p>
+                    <p><strong>Identificación Fiscal:</strong> {user.tax_identifier || "No disponible"}</p>
+                    <p><strong>País:</strong> {user.country || "No disponible"}</p>
+                    <p><strong>Fecha de Nacimiento:</strong> {user.date_of_birth || "No disponible"}</p>
+                    <p><strong>Rol:</strong> {user.role || "No disponible"}</p>
+                    <p><strong>Fecha de Creación:</strong> {user.created_at || "No disponible"}</p>
+                </div>
             ) : (
                 <p>No se encontraron datos del usuario.</p>
             )}
