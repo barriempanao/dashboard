@@ -21,6 +21,29 @@ function getKey(header, callback) {
 }
 
 export async function getServerSideProps({ req }) {
+    try {
+        const token = req.cookies.authToken || null;
+
+        console.log("🟢 getServerSideProps ejecutándose, token:", token);
+
+        // ⚠️ En vez de redirigir, devolvemos un user vacío para depuración
+        return {
+            props: {
+                user: null, // Incluso si no hay datos, forzamos la renderización
+            },
+        };
+    } catch (error) {
+        console.error("❌ Error en getServerSideProps:", error);
+        return {
+            props: {
+                user: null,
+            },
+        };
+    }
+}
+
+/*
+export async function getServerSideProps({ req }) {
     const token = req.cookies.authToken; // Extraer el token de la cookie HttpOnly
 
     if (!token) {
@@ -69,6 +92,7 @@ export async function getServerSideProps({ req }) {
         };
     }
 }
+ */
 
 // ✅ Componente de cuenta del usuario
 export default function Account({ user }) {
