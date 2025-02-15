@@ -40,16 +40,7 @@ body {
   color: #fff;
 }
 
-/* Contenido principal */
-.main-content {
-  flex: 1;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Solo en escritorio: el sidebar debe empujar el contenido */
+/* Layout en escritorio */
 @media screen and (min-width: 1025px) {
   .layout {
     display: flex;
@@ -58,52 +49,24 @@ body {
   .sidebar {
     position: relative; /* Eliminamos el fixed */
   }
-
-  .main-content {
-    margin-left: 0; /* No se superpone, ocupa su espacio natural */
-  }
 }
 
-/* Sidebar en móviles: oculto por defecto */
-@media screen and (max-width: 1024px) {
-  .sidebar {
-    position: fixed;
-    transform: translateX(-100%);
-    width: 220px;
-    height: 100vh;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    z-index: 1000;
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .main-content {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-}
-
-/* Botón */
-.submit-btn {
+/* Área principal y contenido */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column; /* Organiza en columna */
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: bold;
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  min-height: 100vh;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.submit-btn:hover {
-  background: linear-gradient(135deg, #2980b9, #1f618d);
-  transform: scale(1.03);
+.content {
+  flex: 1;
+  margin-top: 20px; /* Espacio entre el header y el contenido */
 }
 
 /* Formulario */
@@ -115,20 +78,10 @@ body {
   max-width: 450px;
   width: 100%;
   text-align: center;
-  position: relative; /* Solucionamos el problema de fondo duplicado */
+  position: relative; /* Soluciona fondo duplicado */
   z-index: 10; /* Asegura que esté sobre otros elementos */
 }
 
-.main-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  min-height: 100vh;
-  padding: 20px;
-}
-
-/* Título */
 .form-container h2 {
   font-size: 24px;
   font-weight: bold;
@@ -136,7 +89,6 @@ body {
   margin-bottom: 20px;
 }
 
-/* Inputs */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -167,23 +119,26 @@ body {
   box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
 }
 
-
-/* Botón para abrir/cerrar sidebar en móviles */
-.menu-toggle {
-  display: none;
-  background: #2c3e50;
+/* Botón */
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  background: linear-gradient(135deg, #3498db, #2980b9);
   color: white;
   border: none;
-  padding: 10px 15px;
-  position: fixed;
-  top: 10px;
-  left: 10px;
+  border-radius: 6px;
   cursor: pointer;
-  z-index: 1001;
-  font-size: 16px;
-  border-radius: 5px;
+  transition: all 0.3s ease;
 }
 
+.submit-btn:hover {
+  background: linear-gradient(135deg, #2980b9, #1f618d);
+  transform: scale(1.03);
+}
+
+/* Loading overlay */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -199,11 +154,40 @@ body {
   color: #333;
 }
 
-/* Mostrar el botón en móviles */
+/* Estilos para móviles: fusionando reglas */
 @media screen and (max-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    transform: translateX(-100%);
+    width: 220px;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  
   .menu-toggle {
     display: block;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    z-index: 1001;
+    font-size: 16px;
+    border-radius: 5px;
   }
 }
-
-
