@@ -4,19 +4,10 @@ import { useState } from 'react';
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch('/api/auth/logout');
-      if (response.ok) {
-        // Redirige a la página de inicio o de login
-        window.location.href = '/';
-      } else {
-        console.error('Error en logout');
-      }
-    } catch (error) {
-      console.error('Error al hacer logout:', error);
-    }
-  };
+    const handleLogout = () => {
+        // Redirige directamente a la ruta de logout
+        window.location.href = '/api/auth/logout';
+      };
 
   return (
     <>
@@ -46,15 +37,11 @@ export default function Sidebar() {
                 Software
               </Link>
             </li>
-            <li>
-              <button
-                onClick={handleLogout}
-                className="logout-btn"
-                style={{ background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer' }}
-              >
-                Logout
-              </button>
-            </li>
+          <li>
+                        <button onClick={handleLogout} className="logout-btn">
+                          Logout
+                        </button>
+                      </li>
           </ul>
         </nav>
       </aside>
