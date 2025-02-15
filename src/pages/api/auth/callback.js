@@ -48,14 +48,15 @@ export default async function handler(req, res) {
       secure: true,
       sameSite: 'Strict',
       path: '/',
-      domain: process.env.COOKIE_DOMAIN, // Asegúrate de que COOKIE_DOMAIN esté definido correctamente, por ejemplo: "dashboard.total-remote-control.com"
+      domain: process.env.COOKIE_DOMAIN, // Ej.: "dashboard.total-remote-control.com"
       maxAge: 60 * 60 * 24, // 1 día
     });
     console.log("🔔 [CALLBACK] Cookie creada:", cookie);
     res.setHeader('Set-Cookie', cookie);
 
-    console.log("🔔 [CALLBACK] Redirigiendo a '/'");
-    res.redirect(302, 'https://dashboard.total-remote-control.com/dashboard/account');
+    // Redirige a account con el parámetro justLoggedIn
+    console.log("🔔 [CALLBACK] Redirigiendo a '/dashboard/account?justLoggedIn=1'");
+    res.redirect(302, 'https://dashboard.total-remote-control.com/dashboard/account?justLoggedIn=1');
   } catch (error) {
     console.error('❌ [CALLBACK] Error en el callback:', error);
     return res.status(500).json({ error: 'Error processing authentication' });
