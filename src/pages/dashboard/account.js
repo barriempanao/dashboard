@@ -2,11 +2,12 @@ import { useState } from 'react';
 import Layout from '../../components/Layout';
 
 export async function getServerSideProps({ req }) {
-  // Verifica que exista el token en req.cookies
   const token = req.cookies.authToken;
+  // Si no hay token, redirige directamente a Cognito para que se loguee
   if (!token) {
+    const cognitoLoginUrl = `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI)}`;
     return {
-      redirect: { destination: '/', permanent: false },
+      redirect: { destination: cognitoLoginUrl, permanent: false },
     };
   }
 
@@ -15,39 +16,36 @@ export async function getServerSideProps({ req }) {
     const host = req.headers.host;
     const baseUrl = `${protocol}://${host}`;
 
-    // Reconstruye la cabecera "cookie" a partir de req.cookies
     const cookieHeader = Object.entries(req.cookies || {})
       .map(([key, value]) => `${key}=${value}`)
       .join('; ');
 
-    // Llama a la API interna pasando la cabecera "cookie" reconstruida
     const res = await fetch(`${baseUrl}/api/user?email=test`, {
-      headers: {
-        cookie: cookieHeader,
-      },
+      headers: { cookie: cookieHeader },
     });
     const userData = await res.json();
-      
-      // Si existe la fecha de nacimiento, formatearla a YYYY-MM-DD
-          if (userData?.date_of_birth) {
-            const dateObj = new Date(userData.date_of_birth);
-            const year = dateObj.getFullYear();
-            const month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
-            const day = ("0" + dateObj.getDate()).slice(-2);
-            userData.date_of_birth = `${year}-${month}-${day}`;
-          }
 
+    if (userData?.date_of_birth) {
+      const dateObj = new Date(userData.date_of_birth);
+      const year = dateObj.getFullYear();
+      const month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
+      const day = ("0" + dateObj.getDate()).slice(-2);
+      userData.date_of_birth = `${year}-${month}-${day}`;
+    }
 
     return {
       props: { user: userData || null },
     };
   } catch (error) {
     console.error('Error en getServerSideProps:', error);
+    // En caso de error, redirige también a Cognito
+    const cognitoLoginUrl = `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI)}`;
     return {
-      redirect: { destination: '/', permanent: false },
+      redirect: { destination: cognitoLoginUrl, permanent: false },
     };
   }
 }
+
 
 export default function Account({ user }) {
   // Inicializa el estado del formulario con los datos del usuario
