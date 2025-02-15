@@ -21,5 +21,6 @@ export async function getPool() {
 export async function getUserByEmail(email) {
   const pool = await getPool();
   const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    console.log("Usuario encontrado:", rows[0]);
   return rows.length > 0 ? rows[0] : null;
 }
