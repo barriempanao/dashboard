@@ -27,6 +27,16 @@ export async function getServerSideProps({ req }) {
       },
     });
     const userData = await res.json();
+      
+      // Si existe la fecha de nacimiento, formatearla a YYYY-MM-DD
+          if (userData?.date_of_birth) {
+            const dateObj = new Date(userData.date_of_birth);
+            const year = dateObj.getFullYear();
+            const month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
+            const day = ("0" + dateObj.getDate()).slice(-2);
+            userData.date_of_birth = `${year}-${month}-${day}`;
+          }
+
 
     return {
       props: { user: userData || null },
