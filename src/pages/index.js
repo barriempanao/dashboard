@@ -1,12 +1,13 @@
-import Layout from "../components/Layout";
+// pages/index.js
+export async function getServerSideProps(context) {
+  return {
+    redirect: {
+      destination: '/dashboard/account',
+      permanent: false, // Cambia a true si la redirección es permanente
+    },
+  };
+}
 
 export default function Home() {
-  return (
-    <Layout>
-      <div>
-        <h1>Bienvenido a la aplicación</h1>
-        <p>Este es el inicio de tu dashboard.</p>
-      </div>
-    </Layout>
-  );
+  return null; // No se renderiza nada porque la redirección se encarga de todo
 }
