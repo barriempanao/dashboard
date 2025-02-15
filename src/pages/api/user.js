@@ -4,17 +4,22 @@ import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import { getUserByEmail } from '../../lib/db';
 
-// URL del JWKS de Cognito (reemplaza si es necesario)
+// URL del JWKS de tu User Pool de Cognito
 const COGNITO_JWKS_URL = 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_b0tpHM55u/.well-known/jwks.json';
 
-// Crea un cliente JWKS para obtener la clave pública dinámicamente
+// Crea el cliente JWKS
 const client = jwksClient({
   jwksUri: COGNITO_JWKS_URL,
 });
 
-// Función para obtener la clave pública usando el "kid" del token
+// Función para obtener la clave pública
 function getKey(header, callback) {
   console.log("[API USER] getKey - header recibido:", header);
+  if (!header || !header.kid) {
+    const errMsg = "Falta el header o el campo 'kid' en el token.";
+    console.error("[API USER] getKey - ERROR:", errMsg);
+    return callback(new Error(errMsg));
+  }
   client.getSigningKey(header.kid, (err, key) => {
     if (err) {
       console.error("[API USER] Error en getSigningKey:", err);
@@ -32,12 +37,13 @@ export default async function handler(req, res) {
   console.log("[API USER] Headers recibidos:", req.headers);
 
   try {
-    // Obtiene la cadena de cookies
-    const rawCookies = req.headers.cookie;
-    console.log("[API USER] rawCookies:", rawCookies);
-
-    // Parsea las cookies si existen
-    const cookies = rawCookies ? cookie.parse(rawCookies) : {};
+    // Intentamos obtener las cookies desde req.cookies (disponible en Next.js) o bien desde req.headers.cookie
+    const cookies =
+      req.cookies && Object.keys(req.cookies).length > 0
+        ? req.cookies
+        : req.headers.cookie
+          ? cookie.parse(req.headers.cookie)
+          : {};
     console.log("[API USER] Cookies parseadas:", cookies);
 
     const token = cookies.authToken;
@@ -48,7 +54,10 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'No se proporcionó token de autenticación' });
     }
 
-    // Verifica el token usando Cognito y obtiene la clave pública dinámicamente
+    // Antes de verificar, decodificamos sin validar para ver su estructura
+    const decodedWithoutVerify = jwt.decode(token, { complete: true });
+    console.log("[API USER] Token decodificado (sin verificar):", decodedWithoutVerify);
+
     let decoded;
     try {
       decoded = await new Promise((resolve, reject) => {
@@ -61,7 +70,7 @@ export default async function handler(req, res) {
           }
         });
       });
-      console.log("[API USER] Token decodificado:", decoded);
+      console.log("[API USER] Token verificado y decodificado:", decoded);
     } catch (err) {
       return res.status(401).json({ error: 'Token inválido o expirado', details: err.message });
     }
@@ -74,7 +83,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'El token no contiene email' });
     }
 
-    // Consulta la base de datos para obtener los datos reales del usuario
+    // Consultamos la base de datos
     const userData = await getUserByEmail(email);
     console.log("[API USER] Datos del usuario obtenidos de la DB:", userData);
 
