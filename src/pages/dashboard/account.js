@@ -3,6 +3,7 @@ import jwksClient from 'jwks-rsa';
 import Layout from '../../components/Layout';
 
 export async function getServerSideProps({ req }) {
+  // Verifica que exista el token en req.cookies
   const token = req.cookies.authToken;
   if (!token) {
     return {
@@ -11,15 +12,19 @@ export async function getServerSideProps({ req }) {
   }
 
   try {
-    // (Aquí puedes verificar el token o asumir que la API lo verificará)
     const protocol = req.headers['x-forwarded-proto'] || 'http';
     const host = req.headers.host;
     const baseUrl = `${protocol}://${host}`;
 
-    // Envía las cookies en la cabecera para que la API pueda parsearlas
-    const res = await fetch(`${baseUrl}/api/user?email=test`, { // El email en la query no es necesario ya que lo usará el token
+    // Reconstruye la cabecera "cookie" a partir de req.cookies
+    const cookieHeader = Object.entries(req.cookies || {})
+      .map(([key, value]) => `${key}=${value}`)
+      .join('; ');
+
+    // Llama a la API interna pasando la cabecera "cookie" reconstruida
+    const res = await fetch(`${baseUrl}/api/user?email=test`, {
       headers: {
-        cookie: req.headers.cookie || '',
+        cookie: cookieHeader,
       },
     });
     const userData = await res.json();
