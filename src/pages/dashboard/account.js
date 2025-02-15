@@ -94,110 +94,108 @@ export default function Account({ user }) {
     }
   };
 
-  return (
-    <Layout>
-      <div className="form-container">
-        <h2>Cuenta del Usuario</h2>
-        {user ? (
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Email</label>
-              <input
-                type="text"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Nombre</label>
-              <input
-                type="text"
-                name="first_name"
-                value={formData.first_name}
-                onChange={handleChange}
-                placeholder="Nombre"
-              />
-              <input
-                type="text"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleChange}
-                placeholder="Apellido"
-              />
-            </div>
-            <div className="form-group">
-              <label>Teléfono</label>
-              <input
-                type="text"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Dirección</label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Identificación Fiscal</label>
-              <input
-                type="text"
-                name="tax_identifier"
-                value={formData.tax_identifier}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>País</label>
-              <input
-                type="text"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Fecha de Nacimiento</label>
-              <input
-                type="date"
-                name="date_of_birth"
-                value={formData.date_of_birth}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Rol</label>
-              <input
-                type="text"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Fecha de Creación</label>
-              <input
-                type="text"
-                name="created_at"
-                value={formData.created_at}
-                readOnly
-                disabled
-              />
-            </div>
-            <button type="submit" className="submit-btn">
-              Guardar Cambios
-            </button>
-          </form>
-        ) : (
-          <p>No se encontraron datos del usuario.</p>
-        )}
-      </div>
-    </Layout>
-  );
-}
+    return (
+        <Layout>
+          <h1>Cuenta del Usuario</h1>
+          {user ? (
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="text"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group">
+                <label>Nombre</label>
+                <input
+                  type="text"
+                  name="first_name"
+                  value={formData.first_name}
+                  onChange={handleChange}
+                  placeholder="Nombre"
+                />
+                <input
+                  type="text"
+                  name="last_name"
+                  value={formData.last_name}
+                  onChange={handleChange}
+                  placeholder="Apellido"
+                />
+              </div>
+              <div className="form-group">
+                <label>Teléfono</label>
+                <input
+                  type="text"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group">
+                <label>Dirección</label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group">
+                <label>Identificación Fiscal</label>
+                <input
+                  type="text"
+                  name="tax_identifier"
+                  value={formData.tax_identifier}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group">
+                <label>País</label>
+                <input
+                  type="text"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group">
+                <label>Fecha de Nacimiento</label>
+                <input
+                  type="date"
+                  name="date_of_birth"
+                  value={formData.date_of_birth}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group">
+                <label>Rol</label>
+                <input
+                  type="text"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group">
+                <label>Fecha de Creación</label>
+                <input
+                  type="text"
+                  name="created_at"
+                  value={formData.created_at}
+                  readOnly
+                  disabled
+                />
+              </div>
+              <button type="submit" className="submit-btn">
+                Guardar Cambios
+              </button>
+            </form>
+          ) : (
+            <p>No se encontraron datos del usuario.</p>
+          )}
+        </Layout>
+      );
+    }
