@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Layout from '../../components/Layout';
 
 export async function getServerSideProps({ req }) {
@@ -39,52 +40,149 @@ export async function getServerSideProps({ req }) {
 }
 
 export default function Account({ user }) {
+  // Inicializa el estado del formulario con los datos del usuario
+  const [formData, setFormData] = useState({
+    email: user?.email || '',
+    first_name: user?.first_name || '',
+    last_name: user?.last_name || '',
+    phone: user?.phone || '',
+    address: user?.address || '',
+    tax_identifier: user?.tax_identifier || '',
+    country: user?.country || '',
+    date_of_birth: user?.date_of_birth || '',
+    role: user?.role || '',
+    created_at: user?.created_at || '',
+  });
+
+  // Actualiza el estado al cambiar un campo
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // Envía los cambios a la API (debes implementar el endpoint /api/user/update)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/user/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        alert('Datos actualizados correctamente.');
+      } else {
+        alert('Error al actualizar los datos.');
+      }
+    } catch (error) {
+      console.error('Error al actualizar:', error);
+      alert('Error al actualizar los datos.');
+    }
+  };
+
   return (
     <Layout>
       <div className="form-container">
         <h2>Cuenta del Usuario</h2>
         {user ? (
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Email</label>
-              <input type="text" value={user.email} readOnly />
+              <input
+                type="text"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
             </div>
             <div className="form-group">
               <label>Nombre</label>
               <input
                 type="text"
-                value={`${user.first_name || 'No disponible'} ${user.last_name || ''}`}
-                readOnly
+                name="first_name"
+                value={formData.first_name}
+                onChange={handleChange}
+                placeholder="Nombre"
+              />
+              <input
+                type="text"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleChange}
+                placeholder="Apellido"
               />
             </div>
             <div className="form-group">
               <label>Teléfono</label>
-              <input type="text" value={user.phone || 'No disponible'} readOnly />
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+              />
             </div>
             <div className="form-group">
               <label>Dirección</label>
-              <input type="text" value={user.address || 'No disponible'} readOnly />
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+              />
             </div>
             <div className="form-group">
               <label>Identificación Fiscal</label>
-              <input type="text" value={user.tax_identifier || 'No disponible'} readOnly />
+              <input
+                type="text"
+                name="tax_identifier"
+                value={formData.tax_identifier}
+                onChange={handleChange}
+              />
             </div>
             <div className="form-group">
               <label>País</label>
-              <input type="text" value={user.country || 'No disponible'} readOnly />
+              <input
+                type="text"
+                name="country"
+                value={formData.country}
+                onChange={handleChange}
+              />
             </div>
             <div className="form-group">
               <label>Fecha de Nacimiento</label>
-              <input type="text" value={user.date_of_birth || 'No disponible'} readOnly />
+              <input
+                type="date"
+                name="date_of_birth"
+                value={formData.date_of_birth}
+                onChange={handleChange}
+              />
             </div>
             <div className="form-group">
               <label>Rol</label>
-              <input type="text" value={user.role || 'No disponible'} readOnly />
+              <input
+                type="text"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+              />
             </div>
             <div className="form-group">
               <label>Fecha de Creación</label>
-              <input type="text" value={user.created_at || 'No disponible'} readOnly />
+              <input
+                type="text"
+                name="created_at"
+                value={formData.created_at}
+                readOnly
+                disabled
+              />
             </div>
+            <button type="submit" className="submit-btn">
+              Guardar Cambios
+            </button>
           </form>
         ) : (
           <p>No se encontraron datos del usuario.</p>
