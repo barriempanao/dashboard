@@ -20,7 +20,8 @@ export async function getPool() {
 
 export async function getUserByEmail(email) {
   const pool = await getPool();
+  console.log('DB_HOST:', process.env.DB_HOST); // Muestra el valor de DB_HOST
   const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-    console.log("Usuario encontrado:", rows[0]);
+  console.log("Usuario encontrado:", rows[0]); // Muestra el usuario encontrado
   return rows.length > 0 ? rows[0] : null;
 }
