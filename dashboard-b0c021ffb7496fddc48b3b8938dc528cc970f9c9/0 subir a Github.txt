@@ -1,0 +1,5 @@
+git status
+
+git add . (o git add [ruta])
+git commit -m "🚀 Mejora en la UI del dashboard"
+git push
