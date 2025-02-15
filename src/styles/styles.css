@@ -119,7 +119,7 @@ body {
   box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
 }
 
-/* Botón */
+/* Botón de envío */
 .submit-btn {
   width: 100%;
   padding: 12px;
@@ -136,6 +136,23 @@ body {
 .submit-btn:hover {
   background: linear-gradient(135deg, #2980b9, #1f618d);
   transform: scale(1.03);
+}
+
+/* Botón Logout */
+.logout-btn {
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ecf0f1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.logout-btn:hover {
+  text-decoration: underline;
 }
 
 /* Loading overlay */
@@ -189,5 +206,12 @@ body {
     z-index: 1001;
     font-size: 16px;
     border-radius: 5px;
+  }
+}
+
+/* Ocultar el botón de menú en escritorio */
+@media screen and (min-width: 1025px) {
+  .menu-toggle {
+    display: none;
   }
 }
