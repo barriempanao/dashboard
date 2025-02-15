@@ -184,6 +184,38 @@ body {
   border-radius: 5px;
 }
 
+
+/* Estilos específicos para la página de cuenta */
+.account-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.account-container h1 {
+  font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.account-container p {
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.update-message {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #27ae60;
+  font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+
+
 /* Mostrar el botón en móviles */
 @media screen and (max-width: 1024px) {
   .menu-toggle {

@@ -20,8 +20,19 @@ export async function getPool() {
 
 export async function getUserByEmail(email) {
   const pool = await getPool();
-  console.log('DB_HOST:', process.env.DB_HOST); // Muestra el valor de DB_HOST
   const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-  console.log("Usuario encontrado:", rows[0]); // Muestra el usuario encontrado
+  console.log("Usuario encontrado:", rows[0]);
   return rows.length > 0 ? rows[0] : null;
+}
+
+export async function updateUserByEmail(email, data) {
+  const pool = await getPool();
+  // Actualiza solo los campos que esperamos editar:
+  const { first_name, last_name, phone, address, tax_identifier, country, date_of_birth } = data;
+  await pool.query(
+    `UPDATE users SET first_name = ?, last_name = ?, phone = ?, address = ?, tax_identifier = ?, country = ?, date_of_birth = ? WHERE email = ?`,
+    [first_name, last_name, phone, address, tax_identifier, country, date_of_birth, email]
+  );
+  // Devuelve la info actualizada
+  return getUserByEmail(email);
 }
