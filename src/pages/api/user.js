@@ -35,6 +35,7 @@ function getKey(header, callback) {
 export default async function handler(req, res) {
   console.log("[API USER] Inicio del handler.");
   console.log("[API USER] Headers recibidos:", req.headers);
+    console.log('Variables de entorno:', process.env);
 
   try {
     // Intentamos obtener las cookies desde req.cookies (disponible en Next.js) o bien desde req.headers.cookie
