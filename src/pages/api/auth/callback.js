@@ -55,7 +55,7 @@ export default async function handler(req, res) {
     res.setHeader('Set-Cookie', cookie);
 
     console.log("🔔 [CALLBACK] Redirigiendo a '/'");
-    res.redirect(302, '/dashboard/account');
+    res.redirect(302, 'https://dashboard.total-remote-control.com/dashboard/account');
   } catch (error) {
     console.error('❌ [CALLBACK] Error en el callback:', error);
     return res.status(500).json({ error: 'Error processing authentication' });
