@@ -31,7 +31,8 @@ export default async function handler(req, res) {
             secure: true,
             sameSite: 'Strict',
             path: '/',
-            maxAge: 60 * 60 * 24 * 30, // 30 días
+            domain: process.env.COOKIE_DOMAIN,
+            maxAge: 60 * 60 * 24, // 1 días
         }));
 
         res.redirect(302, '/');
