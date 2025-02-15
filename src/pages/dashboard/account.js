@@ -3,7 +3,13 @@ import { useState } from 'react';
 import Layout from '../../components/Layout';
 
 export async function getServerSideProps({ req }) {
-  const token = req.cookies.authToken;
+  // Intenta obtener el token a partir de la cabecera de cookies
+  const cookieHeader = req.headers.cookie || "";
+  // Si usas cookie.parse aquí, asegúrate de que funcione; en este ejemplo, verificamos directamente:
+  const token = cookieHeader.includes("authToken=")
+    ? cookieHeader.split("authToken=")[1].split(";")[0]
+    : null;
+
   if (!token) {
     return {
       redirect: { destination: '/', permanent: false },
@@ -15,17 +21,12 @@ export async function getServerSideProps({ req }) {
     const host = req.headers.host;
     const baseUrl = `${protocol}://${host}`;
 
-    // Reconstruir la cabecera "cookie" a partir de req.cookies
-    const cookieHeader = Object.entries(req.cookies || {})
-      .map(([key, value]) => `${key}=${value}`)
-      .join('; ');
-
+    // Usa directamente la cabecera de cookies que viene en req.headers
     const res = await fetch(`${baseUrl}/api/user`, {
       headers: { cookie: cookieHeader },
     });
 
     if (!res.ok) {
-      // Si la respuesta no es OK, mostramos el error en consola y devolvemos user: null
       const errorText = await res.text();
       console.error('API Error:', errorText);
       return { props: { user: null } };
@@ -44,25 +45,14 @@ export async function getServerSideProps({ req }) {
 }
 
 export default function Account({ user }) {
-  // Si no se pudieron obtener los datos del usuario, mostramos un mensaje adecuado
-  if (!user) {
-    return (
-      <Layout>
-        <div className="account-container">
-          <h1>Error al cargar la información de tu cuenta.</h1>
-        </div>
-      </Layout>
-    );
-  }
-
   const [formData, setFormData] = useState({
-    first_name: user.first_name || '',
-    last_name: user.last_name || '',
-    phone: user.phone || '',
-    address: user.address || '',
-    tax_identifier: user.tax_identifier || '',
-    country: user.country || '',
-    date_of_birth: user.date_of_birth ? user.date_of_birth.split('T')[0] : '',
+    first_name: user?.first_name || '',
+    last_name: user?.last_name || '',
+    phone: user?.phone || '',
+    address: user?.address || '',
+    tax_identifier: user?.tax_identifier || '',
+    country: user?.country || '',
+    date_of_birth: user?.date_of_birth ? user.date_of_birth.split('T')[0] : '',
   });
 
   const [message, setMessage] = useState('');
@@ -92,14 +82,23 @@ export default function Account({ user }) {
     }
   };
 
+  // Si no se pudieron obtener los datos del usuario, se muestra un mensaje.
+  if (!user) {
+    return (
+      <Layout>
+        <div className="account-container">
+          <h1>Error al cargar la información de tu cuenta.</h1>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="account-container">
         <h1>Mi Cuenta</h1>
         <div className="user-details">
-          <p>
-            <strong>Email:</strong> {user.email}
-          </p>
+          <p><strong>Email:</strong> {user.email}</p>
         </div>
         <h2>Editar Información</h2>
         <form onSubmit={handleSubmit} className="form-container">
