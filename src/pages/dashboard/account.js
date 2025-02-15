@@ -170,25 +170,7 @@ export default function Account({ user }) {
                   onChange={handleChange}
                 />
               </div>
-              <div className="form-group">
-                <label>Rol</label>
-                <input
-                  type="text"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Fecha de Creación</label>
-                <input
-                  type="text"
-                  name="created_at"
-                  value={formData.created_at}
-                  readOnly
-                  disabled
-                />
-              </div>
+              
               <button type="submit" className="submit-btn">
                 Guardar Cambios
               </button>
