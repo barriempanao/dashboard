@@ -1,5 +1,3 @@
-import jwt from 'jsonwebtoken';
-import jwksClient from 'jwks-rsa';
 import Layout from '../../components/Layout';
 
 export async function getServerSideProps({ req }) {
@@ -43,20 +41,51 @@ export async function getServerSideProps({ req }) {
 export default function Account({ user }) {
   return (
     <Layout>
-      <div>
-        <h1>Cuenta del Usuario</h1>
+      <div className="form-container">
+        <h2>Cuenta del Usuario</h2>
         {user ? (
-          <div>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Nombre:</strong> {user.first_name || 'No disponible'} {user.last_name || ''}</p>
-            <p><strong>Teléfono:</strong> {user.phone || 'No disponible'}</p>
-            <p><strong>Dirección:</strong> {user.address || 'No disponible'}</p>
-            <p><strong>Identificación Fiscal:</strong> {user.tax_identifier || 'No disponible'}</p>
-            <p><strong>País:</strong> {user.country || 'No disponible'}</p>
-            <p><strong>Fecha de Nacimiento:</strong> {user.date_of_birth || 'No disponible'}</p>
-            <p><strong>Rol:</strong> {user.role || 'No disponible'}</p>
-            <p><strong>Fecha de Creación:</strong> {user.created_at || 'No disponible'}</p>
-          </div>
+          <form>
+            <div className="form-group">
+              <label>Email</label>
+              <input type="text" value={user.email} readOnly />
+            </div>
+            <div className="form-group">
+              <label>Nombre</label>
+              <input
+                type="text"
+                value={`${user.first_name || 'No disponible'} ${user.last_name || ''}`}
+                readOnly
+              />
+            </div>
+            <div className="form-group">
+              <label>Teléfono</label>
+              <input type="text" value={user.phone || 'No disponible'} readOnly />
+            </div>
+            <div className="form-group">
+              <label>Dirección</label>
+              <input type="text" value={user.address || 'No disponible'} readOnly />
+            </div>
+            <div className="form-group">
+              <label>Identificación Fiscal</label>
+              <input type="text" value={user.tax_identifier || 'No disponible'} readOnly />
+            </div>
+            <div className="form-group">
+              <label>País</label>
+              <input type="text" value={user.country || 'No disponible'} readOnly />
+            </div>
+            <div className="form-group">
+              <label>Fecha de Nacimiento</label>
+              <input type="text" value={user.date_of_birth || 'No disponible'} readOnly />
+            </div>
+            <div className="form-group">
+              <label>Rol</label>
+              <input type="text" value={user.role || 'No disponible'} readOnly />
+            </div>
+            <div className="form-group">
+              <label>Fecha de Creación</label>
+              <input type="text" value={user.created_at || 'No disponible'} readOnly />
+            </div>
+          </form>
         ) : (
           <p>No se encontraron datos del usuario.</p>
         )}
