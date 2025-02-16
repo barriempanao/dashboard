@@ -33,3 +33,23 @@ export async function getLicensesByUserId(user_id) {
   console.log("Licencias encontradas para el user_id", user_id, ":", rows);
   return rows;
 }
+
+// Obtiene las máquinas autorizadas para una licencia dada
+export async function getDevicesByLicenseId(licenseId) {
+  const pool = await getPool();
+  const [rows] = await pool.query(
+    'SELECT * FROM authorized_machines WHERE license_id = ?',
+    [licenseId]
+  );
+  return rows;
+}
+
+// Elimina una máquina autorizada dado su machine_id
+export async function removeDeviceById(machineId) {
+  const pool = await getPool();
+  const [result] = await pool.query(
+    'DELETE FROM authorized_machines WHERE machine_id = ?',
+    [machineId]
+  );
+  return result;
+}
