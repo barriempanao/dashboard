@@ -11,15 +11,7 @@ export async function getServerSideProps({ req, query }) {
     console.log("DEBUG: Query object:", query);
     console.log("Cookies del request:", req.cookies);
     
-    /*
-    if (!token ) {
-      const cognitoLoginUrl = `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI)}`;
-      return {
-        redirect: { destination: cognitoLoginUrl, permanent: false },
-      };
-    }
-  
-    /*
+    
     // Si no hay token y NO se tiene el indicador de "justLoggedIn", redirige a Cognito
   if (!token && query.justLoggedIn !== '1') {
     const cognitoLoginUrl = `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI)}`;
@@ -34,7 +26,7 @@ export async function getServerSideProps({ req, query }) {
       props: { user: null, justLoggedIn: true },
     };
   }
-     */
+     
 
   try {
     const protocol = req.headers['x-forwarded-proto'] || 'http';
@@ -45,10 +37,10 @@ export async function getServerSideProps({ req, query }) {
       .map(([key, value]) => `${key}=${value}`)
       .join('; ');
 
-      //const email = decoded?.email; // obtenido del id_token
-      //const resFetch = await fetch(`${baseUrl}/api/user?email=${encodeURIComponent(email)}`, {
-      //  headers: { cookie: cookieHeader },
-      //});
+      const email = decoded?.email; // obtenido del id_token
+      const resFetch = await fetch(`${baseUrl}/api/user?email=${encodeURIComponent(email)}`, {
+        headers: { cookie: cookieHeader },
+      });
     const userData = await resFetch.json();
 
     if (userData?.date_of_birth) {
