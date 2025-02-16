@@ -1,20 +1,20 @@
 // pages/dashboard/account.js
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import jwt from 'jsonwebtoken';
 import Layout from '../../components/Layout';
 
 export async function getServerSideProps({ req, query }) {
   const token = req.cookies.authToken;
-    console.log("DEBUG: authToken from cookies:", token);
-      console.log("DEBUG: Query parameter justLoggedIn:", query.justLoggedIn);
-    console.log("DEBUG: Query object:", query);
-    console.log("Cookies del request:", req.cookies);
-    
-    
-    // Si no hay token y NO se tiene el indicador de "justLoggedIn", redirige a Cognito
+  console.log("DEBUG: authToken from cookies:", token);
+  console.log("DEBUG: Query parameter justLoggedIn:", query.justLoggedIn);
+  console.log("DEBUG: Query object:", query);
+  console.log("Cookies del request:", req.cookies);
+
+  // Si no hay token y NO se tiene el indicador de "justLoggedIn", redirige a Cognito
   if (!token && query.justLoggedIn !== '1') {
     const cognitoLoginUrl = `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI)}`;
+    console.log("DEBUG: No token y no justLoggedIn, redirigiendo a Cognito:", cognitoLoginUrl);
     return {
       redirect: { destination: cognitoLoginUrl, permanent: false },
     };
@@ -22,11 +22,22 @@ export async function getServerSideProps({ req, query }) {
   
   // Si no hay token pero sí tenemos justLoggedIn, retornamos un flag para manejarlo en el cliente
   if (!token && query.justLoggedIn === '1') {
+    console.log("DEBUG: No token pero justLoggedIn=1, retornando flag a cliente");
     return {
       props: { user: null, justLoggedIn: true },
     };
   }
-     
+  
+  // Decodifica el token para obtener información del usuario (por ejemplo, el email)
+  let decoded = {};
+  try {
+    decoded = jwt.decode(token) || {};
+    console.log("DEBUG: Token decodificado:", decoded);
+  } catch (err) {
+    console.error("DEBUG: Error al decodificar el token:", err);
+  }
+  const email = decoded.email;
+  console.log("DEBUG: Email extraído del token:", email);
 
   try {
     const protocol = req.headers['x-forwarded-proto'] || 'http';
@@ -37,11 +48,12 @@ export async function getServerSideProps({ req, query }) {
       .map(([key, value]) => `${key}=${value}`)
       .join('; ');
 
-      const email = decoded?.email; // obtenido del id_token
-      const resFetch = await fetch(`${baseUrl}/api/user?email=${encodeURIComponent(email)}`, {
-        headers: { cookie: cookieHeader },
-      });
+    // Usa el email real obtenido del token
+    const resFetch = await fetch(`${baseUrl}/api/user?email=${encodeURIComponent(email)}`, {
+      headers: { cookie: cookieHeader },
+    });
     const userData = await resFetch.json();
+    console.log("DEBUG: Datos del usuario obtenidos:", userData);
 
     if (userData?.date_of_birth) {
       const dateObj = new Date(userData.date_of_birth);
@@ -55,7 +67,7 @@ export async function getServerSideProps({ req, query }) {
       props: { user: userData, justLoggedIn: false },
     };
   } catch (error) {
-    console.error('Error en getServerSideProps:', error);
+    console.error('DEBUG: Error en getServerSideProps:', error);
     const cognitoLoginUrl = `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI)}`;
     return {
       redirect: { destination: cognitoLoginUrl, permanent: false },
@@ -66,7 +78,8 @@ export async function getServerSideProps({ req, query }) {
 export default function Account({ user, justLoggedIn }) {
   const router = useRouter();
 
-    
+  console.log("DEBUG: Prop justLoggedIn en componente:", justLoggedIn);
+
   // Si se indicó que es justLoggedIn, espera unos instantes y recarga la página
   useEffect(() => {
     if (justLoggedIn) {
@@ -76,9 +89,8 @@ export default function Account({ user, justLoggedIn }) {
       }, 500);
     }
   }, [justLoggedIn, router]);
-     
 
-  // Inicializa el estado del formulario con los datos del usuario (sin mostrar role y created_at)
+  // Inicializa el estado del formulario con los datos del usuario (sin role ni created_at)
   const [formData, setFormData] = useState({
     email: user?.email || '',
     first_name: user?.first_name || '',
@@ -88,7 +100,6 @@ export default function Account({ user, justLoggedIn }) {
     tax_identifier: user?.tax_identifier || '',
     country: user?.country || '',
     date_of_birth: user?.date_of_birth || '',
-    // Campos 'role' y 'created_at' han sido eliminados
   });
 
   const handleChange = (e) => {
