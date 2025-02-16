@@ -50,9 +50,23 @@ export async function getServerSideProps({ req }) {
   };
 }
 
+// Función auxiliar para determinar el tipo de licencia
+function getLicenseType(licenseKey) {
+  if (licenseKey.startsWith("MON")) {
+    return "Monthly";
+  } else if (licenseKey.startsWith("ANN")) {
+    return "Annual";
+  } else if (licenseKey.startsWith("PER")) {
+    return "Perpetual";
+  } else {
+    return "Unknown";
+  }
+}
+
 export default function Licenses({ licenses, userEmail }) {
   const [selectedLicense, setSelectedLicense] = useState(null);
 
+  // Selecciona la primera licencia por defecto si hay y ninguna está seleccionada
   useEffect(() => {
     if (licenses && licenses.length > 0 && !selectedLicense) {
       setSelectedLicense(licenses[0]);
@@ -67,20 +81,26 @@ export default function Licenses({ licenses, userEmail }) {
           <h2>Licenses</h2>
           {licenses && licenses.length > 0 ? (
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              {licenses.map((license) => (
-                <li
-                  key={license.license_id}
-                  style={{
-                    padding: '0.5rem',
-                    cursor: 'pointer',
-                    backgroundColor: selectedLicense && selectedLicense.license_id === license.license_id ? '#eee' : 'transparent',
-                    borderBottom: '1px solid #ddd',
-                  }}
-                  onClick={() => setSelectedLicense(license)}
-                >
-                  {license.license_key}
-                </li>
-              ))}
+              {licenses.map((license) => {
+                const type = getLicenseType(license.license_key);
+                const isSelected =
+                  selectedLicense && selectedLicense.license_id === license.license_id;
+                return (
+                  <li
+                    key={license.license_id}
+                    style={{
+                      padding: '0.5rem',
+                      cursor: 'pointer',
+                      backgroundColor: isSelected ? '#eee' : 'transparent',
+                      borderBottom: '1px solid #ddd',
+                      color: isSelected ? '#333' : '#ecf0f1',
+                    }}
+                    onClick={() => setSelectedLicense(license)}
+                  >
+                    {type}
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <p>No se encontraron licencias para {userEmail}.</p>
@@ -94,7 +114,7 @@ export default function Licenses({ licenses, userEmail }) {
               <div>
                 <h2>Detalles de la Licencia</h2>
                 <p>
-                  <strong>ID:</strong> {selectedLicense.license_id}
+                  <strong>Type:</strong> {getLicenseType(selectedLicense.license_key)}
                 </p>
                 <p>
                   <strong>License Key:</strong> {selectedLicense.license_key}
@@ -112,6 +132,7 @@ export default function Licenses({ licenses, userEmail }) {
                 <p>
                   <strong>Status:</strong> {selectedLicense.status}
                 </p>
+                {/* Puedes agregar más detalles según la estructura de la tabla */}
               </div>
             ) : (
               <p>Seleccione una licencia para ver sus detalles.</p>
