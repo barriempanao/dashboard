@@ -50,7 +50,7 @@ export async function getServerSideProps({ req }) {
   };
 }
 
-// Función auxiliar para determinar el tipo de licencia
+// Función auxiliar para determinar el tipo de licencia según el license_key
 function getLicenseType(licenseKey) {
   if (licenseKey.startsWith("MON")) {
     return "Monthly";
@@ -66,7 +66,7 @@ function getLicenseType(licenseKey) {
 export default function Licenses({ licenses, userEmail }) {
   const [selectedLicense, setSelectedLicense] = useState(null);
 
-  // Selecciona la primera licencia por defecto si hay y ninguna está seleccionada
+  // Si hay licencias y aún no hay ninguna seleccionada, seleccionamos la primera por defecto
   useEffect(() => {
     if (licenses && licenses.length > 0 && !selectedLicense) {
       setSelectedLicense(licenses[0]);
@@ -82,7 +82,6 @@ export default function Licenses({ licenses, userEmail }) {
           {licenses && licenses.length > 0 ? (
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {licenses.map((license) => {
-                const type = getLicenseType(license.license_key);
                 const isSelected =
                   selectedLicense && selectedLicense.license_id === license.license_id;
                 return (
@@ -97,7 +96,7 @@ export default function Licenses({ licenses, userEmail }) {
                     }}
                     onClick={() => setSelectedLicense(license)}
                   >
-                    {type}
+                    {license.license_key}
                   </li>
                 );
               })}
@@ -132,7 +131,7 @@ export default function Licenses({ licenses, userEmail }) {
                 <p>
                   <strong>Status:</strong> {selectedLicense.status}
                 </p>
-                {/* Puedes agregar más detalles según la estructura de la tabla */}
+                {/* Agrega más detalles según sea necesario */}
               </div>
             ) : (
               <p>Seleccione una licencia para ver sus detalles.</p>
