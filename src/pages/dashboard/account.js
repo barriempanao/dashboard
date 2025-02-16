@@ -6,6 +6,8 @@ import Layout from '../../components/Layout';
 
 export async function getServerSideProps({ req, query }) {
   const token = req.cookies.authToken;
+    console.log("DEBUG: authToken from cookies:", token);
+      console.log("DEBUG: Query parameter justLoggedIn:", query.justLoggedIn);
   // Si no hay token y NO se tiene el indicador de "justLoggedIn", redirige a Cognito
   if (!token && query.justLoggedIn !== '1') {
     const cognitoLoginUrl = `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI)}`;
