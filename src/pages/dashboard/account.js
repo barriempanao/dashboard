@@ -30,9 +30,10 @@ export async function getServerSideProps({ req, query }) {
       .map(([key, value]) => `${key}=${value}`)
       .join('; ');
 
-    const resFetch = await fetch(`${baseUrl}/api/user?email=test`, {
-      headers: { cookie: cookieHeader },
-    });
+      const email = decoded?.email; // obtenido del id_token
+      const resFetch = await fetch(`${baseUrl}/api/user?email=${encodeURIComponent(email)}`, {
+        headers: { cookie: cookieHeader },
+      });
     const userData = await resFetch.json();
 
     if (userData?.date_of_birth) {
