@@ -9,6 +9,7 @@ export async function getServerSideProps({ req, query }) {
     console.log("DEBUG: authToken from cookies:", token);
       console.log("DEBUG: Query parameter justLoggedIn:", query.justLoggedIn);
     console.log("DEBUG: Query object:", query);
+    console.log("Cookies del request:", req.cookies);
     
     if (!token ) {
       const cognitoLoginUrl = `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/login?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&response_type=code&scope=email+openid&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI)}`;
