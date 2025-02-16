@@ -56,7 +56,7 @@ export default async function handler(req, res) {
 
     // Redirige a account con el parámetro justLoggedIn
     console.log("🔔 [CALLBACK] Redirigiendo a '/dashboard/account?justLoggedIn=1'");
-    res.redirect(302, 'https://dashboard.total-remote-control.com/dashboard/account?justLoggedIn=1');
+    res.redirect(303, 'https://dashboard.total-remote-control.com/dashboard/account?justLoggedIn=1');
   } catch (error) {
     console.error('❌ [CALLBACK] Error en el callback:', error);
     return res.status(500).json({ error: 'Error processing authentication' });
