@@ -85,7 +85,7 @@ export default function Account({ user, justLoggedIn }) {
     if (justLoggedIn) {
       console.log("🔄 [ACCOUNT] Estado justLoggedIn detectado. Esperando 500ms para recargar...");
       setTimeout(() => {
-        router.replace(router.pathname);
+          window.location.reload();
       }, 500);
     }
   }, [justLoggedIn, router]);
