@@ -7,8 +7,10 @@ export default function handler(req, res) {
   );
 
   // Construye la URL de logout de Cognito
-  //const cognitoLogoutURL = `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/logout?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&logout_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI)}`;
-    const cognitoLogoutURL = `https://total-remote-control.com`;
+  const cognitoLogoutURL = `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/logout?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&logout_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI)}`;
+    
+    const cognitoLogoutURL = `${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}/logout?client_id=${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}&logout_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_COGNITO_REDIRECT_LOGOUT_URI)}`;
+
 
   // Redirige a Cognito para cerrar sesión también allí
   res.redirect(cognitoLogoutURL);
