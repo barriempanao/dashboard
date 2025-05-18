@@ -90,7 +90,7 @@ const SoftwarePage = () => {
           }}
         >
           <a
-            href="https://apps.apple.com/"
+            href="https://apps.apple.com/app/total-remote-control/id6745529093"
             target="_blank"
             rel="noopener noreferrer"
           >
