@@ -36,8 +36,9 @@ const InstallerIcon = ({ platform }) => {
 };
 
 const SoftwarePage = () => {
-  const [installers, setInstallers] = useState([]);
-  const [error, setError] = useState(null);
+    const [installers, setInstallers] = useState([]);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchInstallers = async () => {
