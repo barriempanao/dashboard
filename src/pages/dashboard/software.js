@@ -133,7 +133,7 @@ const SoftwarePage = () => {
                   />
                 </a>
                 <p style={{ marginTop: "0.5rem", color: "#555" }}>
-                  Available for all iOS devices on the Apple Store
+                 Download the app for iPad on the App Store
                 </p>
               </div>
             )}
