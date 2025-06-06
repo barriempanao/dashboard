@@ -38,6 +38,11 @@ export default function Sidebar() {
               </Link>
             </li>
           <li>
+          <li>
+            <Link href="/dashboard/invoices" onClick={() => setIsOpen(false)}>
+              Invoices
+            </Link>
+          </li>
                         <button onClick={handleLogout} className="logout-btn">
                           Logout
                         </button>
