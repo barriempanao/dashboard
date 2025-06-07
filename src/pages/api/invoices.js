@@ -24,7 +24,8 @@ function getKey(header, callback) {
 export default async function handler(req, res) {
     
   try {
-      console.log("[API INVOICES] STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY);
+      console.log("[API INVOICES] Todas las variables:", Object.keys(process.env));
+          console.log("[API INVOICES] Valor de STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY);
       
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
         apiVersion: '2023-08-16',
