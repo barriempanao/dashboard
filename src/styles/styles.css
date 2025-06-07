@@ -496,3 +496,35 @@ body {
   height: auto;
   display: block;
 }
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.invoice-table th,
+.invoice-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.invoice-table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #333;
+}
+
+.invoice-table tr:hover {
+  background-color: #f1f5f9;
+}
+
+.invoice-icon {
+  display: inline-block;
+  vertical-align: middle;
+}

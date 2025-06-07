@@ -74,22 +74,42 @@ export default function Invoices({ userEmail }) {
             {!loading && !error && (
               <>
                 <div className="invoice-list">
-                  {invoices.items.map(inv => (
-                    <div key={inv.id} className="invoice-item">
-                      <a href={inv.pdfUrl} target="_blank" rel="noreferrer">
-                        <img src="/icons/invoice-icon.svg" alt="Invoice PDF" className="invoice-icon" />
-                      </a>
-                      <div>
-                        <p><strong>{inv.number}</strong></p>
-                        <p>{new Date(inv.created * 1000).toLocaleDateString()}</p>
-                      </div>
-                      {inv.canBeRecreated && (
-                        <button onClick={() => handleRecreate(inv.id)} className="btn">
-                          Regenerate with tax data
-                        </button>
-                      )}
-                    </div>
-                  ))}
+                                    <table className="invoice-table">
+                                      <thead>
+                                        <tr>
+                                          <th>PDF</th>
+                                          <th>Number</th>
+                                          <th>Date</th>
+                                          <th></th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {invoices.items.map(inv => (
+                                          <tr key={inv.id}>
+                                            <td>
+                                              <a href={inv.pdfUrl} target="_blank" rel="noreferrer">
+                                                <img
+                                                  src="/invoice-icon.svg"
+                                                  alt="Invoice PDF"
+                                                  className="invoice-icon"
+                                                  width={24}
+                                                  height={24}
+                                                />
+                                              </a>
+                                            </td>
+                                            <td>{inv.number}</td>
+                                            <td>{new Date(inv.created * 1000).toLocaleDateString()}</td>
+                                            <td>
+                                              {inv.canBeRecreated && (
+                                                <button onClick={() => handleRecreate(inv.id)} className="btn btn-sm">
+                                                  Regenerate with tax data
+                                                </button>
+                                              )}
+                                            </td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
                 </div>
                 <div className="pagination">
                   {page > 1 && <button onClick={() => setPage(page - 1)}>Previous</button>}
