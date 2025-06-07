@@ -24,8 +24,9 @@ function getKey(header, callback) {
 }
 
 export default async function handler(req, res) {
-    console.log("[API INVOICES] STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY);
+    
   try {
+      console.log("[API INVOICES] STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY);
     // 1. Parsear cookies y token
     const cookies =
       req.cookies && Object.keys(req.cookies).length > 0
