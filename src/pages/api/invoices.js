@@ -5,9 +5,7 @@ import Stripe from 'stripe';
 import { getUserByEmail } from '../../lib/db';
 
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-08-16',
-});
+
 
 const COGNITO_JWKS_URL = 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_b0tpHM55u/.well-known/jwks.json';
 const client = jwksClient({ jwksUri: COGNITO_JWKS_URL });
@@ -27,6 +25,10 @@ export default async function handler(req, res) {
     
   try {
       console.log("[API INVOICES] STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY);
+      
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: '2023-08-16',
+      });
     // 1. Parsear cookies y token
     const cookies =
       req.cookies && Object.keys(req.cookies).length > 0
