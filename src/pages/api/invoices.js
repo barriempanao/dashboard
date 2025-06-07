@@ -51,7 +51,9 @@ export default async function handler(req, res) {
     }
 
     // 3. Obtener datos del usuario
-    const user = await getUserByEmail(email);
+      console.log("[API INVOICES] Email decodificado del token:", email);
+      const user = await getUserByEmail(email);
+      console.log("[API INVOICES] Usuario desde DB:", user);
     if (!user || !user.stripe_customer_id) {
       return res.status(404).json({ error: 'User not found or no Stripe ID' });
     }
@@ -63,6 +65,7 @@ export default async function handler(req, res) {
       const { page = 1 } = req.query;
       const limit = 24;
 
+        console.log("[API INVOICES] Stripe customer ID:", customerId);
       const invoices = await stripe.invoices.list({
         customer: customerId,
         limit: parseInt(limit, 10),
