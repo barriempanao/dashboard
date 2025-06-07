@@ -4,6 +4,7 @@ import jwksClient from 'jwks-rsa';
 import Stripe from 'stripe';
 import { getUserByEmail } from '../../lib/db';
 
+console.log("[API INVOICES] STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY);
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2023-08-16',
 });
