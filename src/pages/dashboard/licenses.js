@@ -63,9 +63,10 @@ function getLicenseType(licenseKey) {
   }
 }
 
-export default function Licenses({ licenses, userEmail }) {
+export default function Licenses({ licenses: initialLicenses, userEmail }) {
   const [selectedLicense, setSelectedLicense] = useState(null);
-    const [isCancelling, setIsCancelling] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [licenses, setLicenses] = useState(initialLicenses);
 
   // Si hay licencias y aún no hay ninguna seleccionada, seleccionamos la primera por defecto
   useEffect(() => {
@@ -73,44 +74,50 @@ export default function Licenses({ licenses, userEmail }) {
       setSelectedLicense(licenses[0]);
     }
   }, [licenses, selectedLicense]);
-    
-    
-    
-    const cancelSubscription = async () => {
-        if (!selectedLicense) return;
-        setIsCancelling(true);
 
-        try {
-            const response = await fetch(process.env.NEXT_PUBLIC_CANCEL_SUBSCRIPTION_URL, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                license_key: selectedLicense.license_key,
-                user_email: userEmail
-              }),
-              mode: 'cors' // 👈 Obligatorio con Function URLs
-            });
+  const cancelSubscription = async () => {
+    if (!selectedLicense) return;
+    setIsCancelling(true);
 
-          const result = await response.json();
+    try {
+      const response = await fetch(process.env.NEXT_PUBLIC_CANCEL_SUBSCRIPTION_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          license_key: selectedLicense.license_key,
+          user_email: userEmail
+        }),
+        mode: 'cors' // 👈 Obligatorio con Function URLs
+      });
 
-          if (response.ok) {
-            alert('✅ Subscription cancellation requested successfully.');
-          } else {
-            alert(`❌ Error: ${result?.message || 'An error occurred.'}`);
-          }
-        } catch (err) {
-          console.error(err);
-          alert('❌ Unexpected error while cancelling subscription.');
-        }
+      const result = await response.json();
 
-        setIsCancelling(false);
-      };
+      if (response.ok) {
+        alert('✅ Subscription cancellation requested successfully.');
 
-    
-    
-    
+        // 🔁 Actualizamos el estado de las licencias en memoria
+        const updatedLicenses = licenses.map(lic =>
+          lic.license_id === selectedLicense.license_id
+            ? { ...lic, status: 'canceled' }
+            : lic
+        );
+        setLicenses(updatedLicenses);
+        setSelectedLicense({
+          ...selectedLicense,
+          status: 'canceled'
+        });
+      } else {
+        alert(`❌ Error: ${result?.message || 'An error occurred.'}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('❌ Unexpected error while cancelling subscription.');
+    }
+
+    setIsCancelling(false);
+  };
 
   return (
     <Layout>
@@ -146,80 +153,53 @@ export default function Licenses({ licenses, userEmail }) {
         </div>
 
         {/* Área principal con los detalles de la licencia seleccionada */}
-          <div className="main-content">
-                    <div className="content">
-                      {selectedLicense ? (
-                        <>
-                          <h2>License Details</h2>
-                          <p><strong>Type:</strong> {getLicenseType(selectedLicense.license_key)}</p>
-                          <p><strong>License Key:</strong> {selectedLicense.license_key}</p>
-                          <p><strong>Issued At:</strong> {new Date(selectedLicense.issued_at).toLocaleString()}</p>
-                          <p><strong>Last Validated At:</strong> {selectedLicense.last_validated_at ? new Date(selectedLicense.last_validated_at).toLocaleString() : 'N/A'}</p>
-                          <p><strong>Status:</strong> {selectedLicense.status}</p>
+        <div className="main-content">
+          <div className="content">
+            {selectedLicense ? (
+              <>
+                <h2>License Details</h2>
+                <p><strong>Type:</strong> {getLicenseType(selectedLicense.license_key)}</p>
+                <p><strong>License Key:</strong> {selectedLicense.license_key}</p>
+                <p><strong>Issued At:</strong> {new Date(selectedLicense.issued_at).toLocaleString()}</p>
+                <p><strong>Last Validated At:</strong> {selectedLicense.last_validated_at ? new Date(selectedLicense.last_validated_at).toLocaleString() : 'N/A'}</p>
+                <p><strong>Status:</strong> {selectedLicense.status}</p>
 
-                                          {(getLicenseType(selectedLicense.license_key) === 'Monthly' ||
-                                            getLicenseType(selectedLicense.license_key) === 'Annual') && (
-                                            <button
-                                              onClick={async () => {
-                                                const confirmed = window.confirm(
-                                                  "This action will cancel your subscription.\n" +
-                                                  "Your license will remain active until the end of the current billing period.\n" +
-                                                  "Do you want to continue?"
-                                                );
-                                                if (!confirmed) return;
+                {(getLicenseType(selectedLicense.license_key) === 'Monthly' ||
+                  getLicenseType(selectedLicense.license_key) === 'Annual') && (
+                  <button
+                    onClick={async () => {
+                      const confirmed = window.confirm(
+                        "This action will cancel your subscription.\n" +
+                        "Your license will remain active until the end of the current billing period.\n" +
+                        "Do you want to continue?"
+                      );
+                      if (!confirmed) return;
 
-                                                setIsCancelling(true);
-
-                                                try {
-                                                    const response = await fetch(process.env.NEXT_PUBLIC_CANCEL_SUBSCRIPTION_URL, {
-                                                      method: 'POST',
-                                                      headers: {
-                                                        'Content-Type': 'application/json'
-                                                      },
-                                                      body: JSON.stringify({
-                                                        license_key: selectedLicense.license_key,
-                                                        user_email: userEmail
-                                                      }),
-                                                      mode: 'cors' // 👈 Obligatorio con Function URLs
-                                                    });
-
-                                                  const result = await response.json();
-
-                                                  if (response.ok) {
-                                                    alert('✅ Your subscription has been successfully canceled.');
-                                                  } else {
-                                                      alert(`❌ Error: ${result?.message || 'An error occurred.'} Please contact support@total-remote-control.com for assistance.`);
-                                                  }
-                                                } catch (err) {
-                                                  console.error(err);
-                                                    alert('❌ Unexpected error while cancelling subscription. Please contact support@total-remote-control.com for assistance.');
-                                                }
-
-                                                setIsCancelling(false);
-                                              }}
-                                              disabled={isCancelling}
-                                              style={{
-                                                marginTop: '1rem',
-                                                padding: '0.6rem 1.2rem',
-                                                fontSize: '1rem',
-                                                backgroundColor: isCancelling ? '#7fb3d5' : '#3498db',
-                                                color: '#fff',
-                                                border: 'none',
-                                                borderRadius: '4px',
-                                                cursor: isCancelling ? 'not-allowed' : 'pointer',
-                                                transition: 'background-color 0.3s ease'
-                                              }}
-                                            >
-                                              {isCancelling ? 'Cancelling...' : 'Cancel Subscription'}
-                                            </button>
-                                          )}
-                        </>
-                      ) : (
-                        <p>Select a license to view its details.</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </Layout>
-            );
-          }
+                      await cancelSubscription();
+                    }}
+                    disabled={isCancelling}
+                    style={{
+                      marginTop: '1rem',
+                      padding: '0.6rem 1.2rem',
+                      fontSize: '1rem',
+                      backgroundColor: isCancelling ? '#7fb3d5' : '#3498db',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: isCancelling ? 'not-allowed' : 'pointer',
+                      transition: 'background-color 0.3s ease'
+                    }}
+                  >
+                    {isCancelling ? 'Cancelling...' : 'Cancel Subscription'}
+                  </button>
+                )}
+              </>
+            ) : (
+              <p>Select a license to view its details.</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+}
