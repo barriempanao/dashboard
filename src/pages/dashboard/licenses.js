@@ -166,7 +166,8 @@ export default function Licenses({ licenses: initialLicenses, userEmail }) {
 
                                 {(getLicenseType(selectedLicense.license_key) === 'Monthly' ||
                                   getLicenseType(selectedLicense.license_key) === 'Annual') &&
-                                  selectedLicense.status !== 'canceled' && (
+                                  selectedLicense.status !== 'canceled' &&
+                                  selectedLicense.status !== 'expired' && (
                                     <button
                                       onClick={async () => {
                                         const confirmed = window.confirm(
