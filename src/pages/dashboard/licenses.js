@@ -65,6 +65,7 @@ function getLicenseType(licenseKey) {
 
 export default function Licenses({ licenses, userEmail }) {
   const [selectedLicense, setSelectedLicense] = useState(null);
+    const [isCancelling, setIsCancelling] = useState(false);
 
   // Si hay licencias y aún no hay ninguna seleccionada, seleccionamos la primera por defecto
   useEffect(() => {
@@ -72,6 +73,41 @@ export default function Licenses({ licenses, userEmail }) {
       setSelectedLicense(licenses[0]);
     }
   }, [licenses, selectedLicense]);
+    
+    
+    
+    const cancelSubscription = async () => {
+        if (!selectedLicense) return;
+        setIsCancelling(true);
+
+        try {
+          const response = await fetch(process.env.NEXT_PUBLIC_CANCEL_SUBSCRIPTION_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              license_id: selectedLicense.license_id,
+              user_email: userEmail
+            })
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert('✅ Subscription cancellation requested successfully.');
+          } else {
+            alert(`❌ Error: ${result?.message || 'An error occurred.'}`);
+          }
+        } catch (err) {
+          console.error(err);
+          alert('❌ Unexpected error while cancelling subscription.');
+        }
+
+        setIsCancelling(false);
+      };
+
+    
+    
+    
 
   return (
     <Layout>
@@ -107,38 +143,43 @@ export default function Licenses({ licenses, userEmail }) {
         </div>
 
         {/* Área principal con los detalles de la licencia seleccionada */}
-        <div className="main-content">
-          <div className="content">
-            {selectedLicense ? (
-              <div>
-                <h2>Detalles de la Licencia</h2>
-                <p>
-                  <strong>Type:</strong> {getLicenseType(selectedLicense.license_key)}
-                </p>
-                <p>
-                  <strong>License Key:</strong> {selectedLicense.license_key}
-                </p>
-                <p>
-                  <strong>Issued At:</strong>{" "}
-                  {new Date(selectedLicense.issued_at).toLocaleString()}
-                </p>
-                <p>
-                  <strong>Last Validated At:</strong>{" "}
-                  {selectedLicense.last_validated_at
-                    ? new Date(selectedLicense.last_validated_at).toLocaleString()
-                    : 'N/A'}
-                </p>
-                <p>
-                  <strong>Status:</strong> {selectedLicense.status}
-                </p>
-                {/* Agrega más detalles según sea necesario */}
-              </div>
-            ) : (
-              <p>Seleccione una licencia para ver sus detalles.</p>
-            )}
-          </div>
-        </div>
-      </div>
-    </Layout>
-  );
-}
+          <div className="main-content">
+                    <div className="content">
+                      {selectedLicense ? (
+                        <>
+                          <h2>License Details</h2>
+                          <p><strong>Type:</strong> {getLicenseType(selectedLicense.license_key)}</p>
+                          <p><strong>License Key:</strong> {selectedLicense.license_key}</p>
+                          <p><strong>Issued At:</strong> {new Date(selectedLicense.issued_at).toLocaleString()}</p>
+                          <p><strong>Last Validated At:</strong> {selectedLicense.last_validated_at ? new Date(selectedLicense.last_validated_at).toLocaleString() : 'N/A'}</p>
+                          <p><strong>Status:</strong> {selectedLicense.status}</p>
+
+                          {(getLicenseType(selectedLicense.license_key) === 'Monthly' ||
+                            getLicenseType(selectedLicense.license_key) === 'Annual') && (
+                            <button
+                              onClick={cancelSubscription}
+                              disabled={isCancelling}
+                              style={{
+                                marginTop: '1rem',
+                                padding: '0.6rem 1.2rem',
+                                fontSize: '1rem',
+                                backgroundColor: isCancelling ? '#aaa' : '#e74c3c',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: isCancelling ? 'not-allowed' : 'pointer'
+                              }}
+                            >
+                              {isCancelling ? 'Cancelling...' : 'Cancel Subscription'}
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <p>Select a license to view its details.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Layout>
+            );
+          }
