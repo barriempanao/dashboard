@@ -164,35 +164,36 @@ export default function Licenses({ licenses: initialLicenses, userEmail }) {
                 <p><strong>Last Validated At:</strong> {selectedLicense.last_validated_at ? new Date(selectedLicense.last_validated_at).toLocaleString() : 'N/A'}</p>
                 <p><strong>Status:</strong> {selectedLicense.status}</p>
 
-                {(getLicenseType(selectedLicense.license_key) === 'Monthly' ||
-                  getLicenseType(selectedLicense.license_key) === 'Annual') && (
-                  <button
-                    onClick={async () => {
-                      const confirmed = window.confirm(
-                        "This action will cancel your subscription.\n" +
-                        "Your license will remain active until the end of the current billing period.\n" +
-                        "Do you want to continue?"
-                      );
-                      if (!confirmed) return;
+                                {(getLicenseType(selectedLicense.license_key) === 'Monthly' ||
+                                  getLicenseType(selectedLicense.license_key) === 'Annual') &&
+                                  selectedLicense.status !== 'canceled' && (
+                                    <button
+                                      onClick={async () => {
+                                        const confirmed = window.confirm(
+                                          "This action will cancel your subscription.\n" +
+                                          "Your license will remain active until the end of the current billing period.\n" +
+                                          "Do you want to continue?"
+                                        );
+                                        if (!confirmed) return;
 
-                      await cancelSubscription();
-                    }}
-                    disabled={isCancelling}
-                    style={{
-                      marginTop: '1rem',
-                      padding: '0.6rem 1.2rem',
-                      fontSize: '1rem',
-                      backgroundColor: isCancelling ? '#7fb3d5' : '#3498db',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: isCancelling ? 'not-allowed' : 'pointer',
-                      transition: 'background-color 0.3s ease'
-                    }}
-                  >
-                    {isCancelling ? 'Cancelling...' : 'Cancel Subscription'}
-                  </button>
-                )}
+                                        await cancelSubscription();
+                                      }}
+                                      disabled={isCancelling}
+                                      style={{
+                                        marginTop: '1rem',
+                                        padding: '0.6rem 1.2rem',
+                                        fontSize: '1rem',
+                                        backgroundColor: isCancelling ? '#7fb3d5' : '#3498db',
+                                        color: '#fff',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: isCancelling ? 'not-allowed' : 'pointer',
+                                        transition: 'background-color 0.3s ease'
+                                      }}
+                                    >
+                                      {isCancelling ? 'Cancelling...' : 'Cancel Subscription'}
+                                    </button>
+                                )}
               </>
             ) : (
               <p>Select a license to view its details.</p>
