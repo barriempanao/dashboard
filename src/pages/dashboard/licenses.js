@@ -81,14 +81,17 @@ export default function Licenses({ licenses, userEmail }) {
         setIsCancelling(true);
 
         try {
-          const response = await fetch(process.env.NEXT_PUBLIC_CANCEL_SUBSCRIPTION_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              license_id: selectedLicense.license_id,
-              user_email: userEmail
-            })
-          });
+            const response = await fetch(process.env.NEXT_PUBLIC_CANCEL_SUBSCRIPTION_URL, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                license_key: selectedLicense.license_key,
+                user_email: userEmail
+              }),
+              mode: 'cors' // 👈 Obligatorio con Function URLs
+            });
 
           const result = await response.json();
 
@@ -168,14 +171,17 @@ export default function Licenses({ licenses, userEmail }) {
                                                 setIsCancelling(true);
 
                                                 try {
-                                                  const response = await fetch(process.env.NEXT_PUBLIC_CANCEL_SUBSCRIPTION_URL, {
-                                                    method: 'POST',
-                                                    headers: { 'Content-Type': 'application/json' },
-                                                    body: JSON.stringify({
-                                                      license_id: selectedLicense.license_id,
-                                                      user_email: userEmail
-                                                    })
-                                                  });
+                                                    const response = await fetch(process.env.NEXT_PUBLIC_CANCEL_SUBSCRIPTION_URL, {
+                                                      method: 'POST',
+                                                      headers: {
+                                                        'Content-Type': 'application/json'
+                                                      },
+                                                      body: JSON.stringify({
+                                                        license_key: selectedLicense.license_key,
+                                                        user_email: userEmail
+                                                      }),
+                                                      mode: 'cors' // 👈 Obligatorio con Function URLs
+                                                    });
 
                                                   const result = await response.json();
 
