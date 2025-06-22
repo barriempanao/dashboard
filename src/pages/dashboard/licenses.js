@@ -180,13 +180,13 @@ export default function Licenses({ licenses, userEmail }) {
                                                   const result = await response.json();
 
                                                   if (response.ok) {
-                                                    alert('✅ Subscription cancellation requested successfully.');
+                                                    alert('✅ Your subscription has been successfully canceled.');
                                                   } else {
-                                                    alert(`❌ Error: ${result?.message || 'An error occurred.'}`);
+                                                      alert(`❌ Error: ${result?.message || 'An error occurred.'} Please contact support@total-remote-control.com for assistance.`);
                                                   }
                                                 } catch (err) {
                                                   console.error(err);
-                                                  alert('❌ Unexpected error while cancelling subscription.');
+                                                    alert('❌ Unexpected error while cancelling subscription. Please contact support@total-remote-control.com for assistance.');
                                                 }
 
                                                 setIsCancelling(false);
